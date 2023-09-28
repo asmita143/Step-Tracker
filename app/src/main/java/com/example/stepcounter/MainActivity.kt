@@ -28,7 +28,58 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+ stepCounter.initialize(this)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        stepCounter.startListening()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stepCounter.stopListening()
+    }
+}
+
+class StepCounter {
+    private var sensorManager: SensorManager? = null
+    private var stepCounterSensor: Sensor? = null
+    private var listener: SensorEventListener? = null
+
+    fun initialize(context: Context) {
+        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        stepCounterSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+
+        listener = object : SensorEventListener {
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                
+            }
+
+            override fun onSensorChanged(event: SensorEvent?) {
+                if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
+                    val steps = event.values[0].toInt()
+                    
+                }
+            }
+        }
+    }
+
+    fun startListening() {
+        sensorManager?.registerListener(listener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    fun stopListening() {
+        sensorManager?.unregisterListener(listener)
+    }
+}
+
+      
+    // short overview   
+//Initialized the step counter in onCreate of MainActivity.
+// Started listening to the step counter in onResume() and stopped in onPause().
+// then we have a callback function onAccuracyChange() incase the sensor accurcy changed. 
+// please add whatever you think is relevant.
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
@@ -36,6 +87,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         modifier = modifier
     )
 }
+ 
 
 @Preview(showBackground = true)
 @Composable
