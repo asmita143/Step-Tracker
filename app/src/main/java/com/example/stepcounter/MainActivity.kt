@@ -12,6 +12,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,11 +23,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,14 +51,24 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import com.example.stepcounter.ui.theme.md_theme_light_background
 import com.example.stepcounter.ui.theme.md_theme_light_onSecondary
 import com.example.stepcounter.ui.theme.md_theme_light_tertiary
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,6 +154,7 @@ fun Home(
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
     var progress by remember { mutableStateOf(0.1f) }
+    var checked by remember { mutableStateOf(true) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
@@ -154,6 +170,17 @@ fun Home(
             durationMillis = animationDuration
         ), label = ""
     )
+
+    //Hard coded values for testing the BarGraph
+    val entries = ArrayList<BarEntry>()
+
+    entries.add(BarEntry(0F,3000F))
+    entries.add(BarEntry(1F, 4050F))
+    entries.add(BarEntry(2F, 4500F))
+    entries.add(BarEntry(3F, 6110F))
+    entries.add(BarEntry(4F, 5500F))
+    entries.add(BarEntry(5F, 3550F))
+    entries.add(BarEntry(6F, 3300F))
 
     // This is to start the animation when the activity is opened
     LaunchedEffect(Unit) {
@@ -193,7 +220,8 @@ fun Home(
             {
                 Box(
                     modifier = Modifier
-                        .size(size).background(Color.White),
+                        .size(size)
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(
@@ -270,11 +298,29 @@ fun Home(
                                 .padding(10.dp)
                         ) {
                             Text(text = "Target", fontSize = 14.sp)
-                            Text(text = target.toInt().toString(), fontSize = 18.sp)
+                            Text(text = target.toString(), fontSize = 18.sp)
                         }
                     }
                 }
             }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(text = "Day", Modifier.padding(end = 10.dp))
+            Switch(
+                checked = checked,
+                onCheckedChange = {
+                    checked = it
+                },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = Color.Gray,
+                ),
+            )
+            Text(text = "Week", Modifier.padding(start = 10.dp))
         }
 
         Box(
@@ -284,8 +330,52 @@ fun Home(
                 .padding(20.dp)
                 .background(MaterialTheme.colorScheme.primary)
         ) {
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context: Context ->
+                    val view = BarChart(context)
+                    view.legend.isEnabled = false
+                    val data = BarData(BarDataSet( entries, "Label 1"))
+                    view.data = data
+                    view
+                },
+                update = { view ->
+                    // Update the view
+                    val xAxisFormatter: ValueFormatter = DayAxisValueFormatter()
+                    var dataSet: BarDataSet = BarDataSet( entries, "Label 1")
+                    val data = BarData(dataSet)
+                    view.description.isEnabled = false
+                    view.data = data
+                    view.axisRight.isEnabled = false
+                    view.axisLeft.isEnabled = false
+                    view.xAxis.position = XAxis.XAxisPosition.BOTTOM
+                    view.xAxis.setDrawGridLines(false)
+                    view.animateXY(2000, 3000, Easing.EaseInSine)
+                    view.setTouchEnabled(true)
+                    view.xAxis.valueFormatter = xAxisFormatter
+                    view.invalidate()
+                }
+            )
         }
 
+    }
+}
+
+//Class to convert the float values to String for X-axis Label in Bar graph
+class DayAxisValueFormatter() : ValueFormatter() {
+    private val labels = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+    override fun getFormattedValue(value: Float): String {
+        var label = ""
+        when (value) {
+            0.0F -> label = labels[0]
+            1.0F -> label = labels[1]
+            2.0F -> label = labels[2]
+            3.0F -> label = labels[3]
+            4.0F -> label = labels[4]
+            5.0F -> label = labels[5]
+            6.0F -> label = labels[6]
+        }
+        return label
     }
 }
 
