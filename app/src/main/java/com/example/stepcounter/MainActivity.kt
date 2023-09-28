@@ -1,5 +1,10 @@
 package com.example.stepcounter
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,13 +27,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+
                 }
             }
         }
     }
 }
- stepCounter.initialize(this)
+ /*stepCounter.initialize(this)
     }
 
     override fun onResume() {
@@ -40,7 +45,7 @@ class MainActivity : ComponentActivity() {
         super.onPause()
         stepCounter.stopListening()
     }
-}
+}*/
 
 class StepCounter {
     private var sensorManager: SensorManager? = null
@@ -80,19 +85,4 @@ class StepCounter {
 // Started listening to the step counter in onResume() and stopped in onPause().
 // then we have a callback function onAccuracyChange() incase the sensor accurcy changed. 
 // please add whatever you think is relevant.
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
- 
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    StepCounterTheme {
-        Greeting("Android")
-    }
-}
