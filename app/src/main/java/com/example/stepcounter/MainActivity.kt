@@ -1,21 +1,25 @@
 package com.example.stepcounter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,10 +28,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchColors
@@ -50,6 +68,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -58,6 +77,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import com.example.stepcounter.ui.theme.md_theme_light_background
 import com.example.stepcounter.ui.theme.md_theme_light_onSecondary
@@ -71,19 +92,29 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 
 class MainActivity : ComponentActivity() {
+    val stepCounter = StepCounter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
+            val navController = rememberNavController()
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Home()
-
+                    Home(navController)
                 }
             }
         }
+        stepCounter.initialize(this)
+        stepCounter.startListening()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+
+        // Stop listening for step count updates
+        stepCounter.stopListening()
     }
 }
  /*stepCounter.initialize(this)
@@ -117,7 +148,7 @@ class StepCounter {
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
                     val steps = event.values[0].toInt()
-                    
+                    Log.d("MSG", "$steps")
                 }
             }
         }
@@ -139,9 +170,9 @@ class StepCounter {
 // then we have a callback function onAccuracyChange() incase the sensor accurcy changed. 
 // please add whatever you think is relevant.
 
-@Preview(showBackground = true)
 @Composable
 fun Home(
+    navController: NavHostController,
     size: Dp = 150.dp,
     target: Int = 13100,
     foregroundIndicatorColor: Color = Color(0xFF35898f),
@@ -189,8 +220,7 @@ fun Home(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )
@@ -320,15 +350,16 @@ fun Home(
                     checkedTrackColor = Color.Gray,
                 ),
             )
-            Text(text = "Week", Modifier.padding(start = 10.dp))
+            Text(text = "Week", Modifier.padding(start = 10.dp, end = 20.dp))
         }
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(screenHeight / 2)
                 .padding(20.dp)
+                .height(screenHeight / 2 - 130.dp)
                 .background(MaterialTheme.colorScheme.primary)
+
         ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -357,7 +388,7 @@ fun Home(
                 }
             )
         }
-
+        BottomAppBar(navController)
     }
 }
 
@@ -377,6 +408,68 @@ class DayAxisValueFormatter() : ValueFormatter() {
         }
         return label
     }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomAppBar(navController: NavHostController) {
+    Scaffold(
+        bottomBar = {
+            BottomAppBar(
+                modifier = Modifier
+                    .border(
+                        border = BorderStroke(
+                            width = 0.1.dp, // Border width
+                            color = Color.LightGray // Border color
+                        ),
+                    )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp), // Adjust horizontal padding as needed
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        NavigationItem(navController , Screen.Home, Icons.Default.Home, "Home")
+                        NavigationItem(navController, Screen.Notifications, Icons.Default.Notifications, "Notification")
+                        NavigationItem(navController, Screen.History, Icons.Default.Refresh, "History")
+                        NavigationItem(navController, Screen.Profile, Icons.Default.AccountCircle, "Profile")
+                    }
+                }
+            }
+        },
+        content = {
+
+        }
+    )
+}
+
+@Composable
+fun NavigationItem(
+    navController: NavHostController,
+    screen: Screen,
+    icon: ImageVector,
+    label: String
+) {
+    IconButton(
+        onClick = { navController.navigate(screen.route) }
+    ) {
+        Icon(imageVector = icon, contentDescription = label)
+    }
+}
+
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object Profile : Screen("profile")
+    object Notifications : Screen("profile")
+    object History : Screen("profile")
 }
 
 @Composable
@@ -399,5 +492,6 @@ private fun DisplayText(
         )
     }
 }
+
 
 
