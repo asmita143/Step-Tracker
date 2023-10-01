@@ -79,6 +79,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.stepcounter.Homepage.StatisticsGraph
+import com.example.stepcounter.Homepage.StepInfoTop
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import com.example.stepcounter.ui.theme.md_theme_light_background
 import com.example.stepcounter.ui.theme.md_theme_light_onSecondary
@@ -110,15 +112,6 @@ class MainActivity : ComponentActivity() {
         stepCounter.initialize(this)
         stepCounter.startListening()
     }
-    override fun onDestroy() {
-        super.onDestroy()
-
-        // Stop listening for step count updates
-        stepCounter.stopListening()
-    }
-}
- /*stepCounter.initialize(this)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -129,7 +122,7 @@ class MainActivity : ComponentActivity() {
         super.onPause()
         stepCounter.stopListening()
     }
-}*/
+}
 
 class StepCounter {
     private var sensorManager: SensorManager? = null
@@ -171,52 +164,11 @@ class StepCounter {
 // please add whatever you think is relevant.
 
 @Composable
-fun Home(
-    navController: NavHostController,
-    size: Dp = 150.dp,
-    target: Int = 13100,
-    foregroundIndicatorColor: Color = Color(0xFF35898f),
-    shadowColor: Color = Color.LightGray,
-    indicatorThickness: Dp = 8.dp,
-    stepsTaken: Float = 6550f,
-    animationDuration: Int = 1000,
-    ) {
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
-    var progress by remember { mutableStateOf(0.1f) }
+fun Home(navController: NavHostController) {
     var checked by remember { mutableStateOf(true) }
-    val animatedProgress = animateFloatAsState(
-        targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
-    ).value
-    var stepsTakenRemember by remember {
-        mutableStateOf(-1f)
-    }
+    val bargraph = StatisticsGraph()
+    val stepInfo = StepInfoTop()
 
-    // This is to animate the foreground indicator
-    val stepsTakenAnimate = animateFloatAsState(
-        targetValue = stepsTakenRemember,
-        animationSpec = tween(
-            durationMillis = animationDuration
-        ), label = ""
-    )
-
-    //Hard coded values for testing the BarGraph
-    val entries = ArrayList<BarEntry>()
-
-    entries.add(BarEntry(0F,3000F))
-    entries.add(BarEntry(1F, 4050F))
-    entries.add(BarEntry(2F, 4500F))
-    entries.add(BarEntry(3F, 6110F))
-    entries.add(BarEntry(4F, 5500F))
-    entries.add(BarEntry(5F, 3550F))
-    entries.add(BarEntry(6F, 3300F))
-
-    // This is to start the animation when the activity is opened
-    LaunchedEffect(Unit) {
-        stepsTakenRemember = stepsTaken
-    }
 
     Column(
         modifier = Modifier
@@ -225,115 +177,7 @@ fun Home(
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight / 2)
-                .padding(20.dp)
-                .shadow(
-                    elevation = 20.dp,
-                    shape = RectangleShape,
-                    spotColor = Color.Black
-                ),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White,
-            ),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally
-            )
-            {
-                Box(
-                    modifier = Modifier
-                        .size(size)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Canvas(
-                        modifier = Modifier
-                            .size(size)
-                    ) {
-                        // For shadow
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(shadowColor, Color.White),
-                                center = Offset(x = this.size.width / 2, y = this.size.height / 2),
-                                radius = this.size.height / 2
-                            ),
-                            radius = this.size.height / 2,
-                            center = Offset(x = this.size.width / 2, y = this.size.height / 2)
-                        )
-
-                        // This is the white circle that appears on the top of the shadow circle
-                        drawCircle(
-                            color = md_theme_light_background,
-                            radius = (size / 2 - indicatorThickness).toPx(),
-                            center = Offset(x = this.size.width / 2, y = this.size.height / 2)
-                        )
-
-                        // Convert the stepsTaken to angle
-                        val sweepAngle = (stepsTakenAnimate.value) * 360 / target
-
-                        // Foreground indicator
-                        drawArc(
-                            color = md_theme_light_tertiary,
-                            startAngle = -90f,
-                            sweepAngle = sweepAngle,
-                            useCenter = false,
-                            style = Stroke(
-                                width = indicatorThickness.toPx(),
-                                cap = StrokeCap.Round
-                            ),
-                            size = Size(
-                                width = (size - indicatorThickness).toPx(),
-                                height = (size - indicatorThickness).toPx()
-                            ),
-                            topLeft = Offset(
-                                x = (indicatorThickness / 2).toPx(),
-                                y = (indicatorThickness / 2).toPx()
-                            )
-                        )
-                    }
-
-                    // Display the data usage value
-                    DisplayText(stepsTakenAnimate)
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(md_theme_light_onSecondary)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Column(
-                            modifier = Modifier
-                                .padding(10.dp),
-                        ) {
-                            Text(text = "Remaining", fontSize = 14.sp)
-                            Text(text = (target - stepsTaken.toInt()).toString(), fontSize = 18.sp)
-                        }
-                        Column(
-                            modifier = Modifier
-                                .padding(10.dp)
-                        ) {
-                            Text(text = "Target", fontSize = 14.sp)
-                            Text(text = target.toString(), fontSize = 18.sp)
-                        }
-                    }
-                }
-            }
-        }
+        stepInfo.StepsInfoSection()
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -353,60 +197,8 @@ fun Home(
             Text(text = "Week", Modifier.padding(start = 10.dp, end = 20.dp))
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-                .height(screenHeight / 2 - 130.dp)
-                .background(MaterialTheme.colorScheme.primary)
-
-        ) {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = { context: Context ->
-                    val view = BarChart(context)
-                    view.legend.isEnabled = false
-                    val data = BarData(BarDataSet( entries, "Label 1"))
-                    view.data = data
-                    view
-                },
-                update = { view ->
-                    // Update the view
-                    val xAxisFormatter: ValueFormatter = DayAxisValueFormatter()
-                    var dataSet: BarDataSet = BarDataSet( entries, "Label 1")
-                    val data = BarData(dataSet)
-                    view.description.isEnabled = false
-                    view.data = data
-                    view.axisRight.isEnabled = false
-                    view.axisLeft.isEnabled = false
-                    view.xAxis.position = XAxis.XAxisPosition.BOTTOM
-                    view.xAxis.setDrawGridLines(false)
-                    view.animateXY(2000, 3000, Easing.EaseInSine)
-                    view.setTouchEnabled(true)
-                    view.xAxis.valueFormatter = xAxisFormatter
-                    view.invalidate()
-                }
-            )
-        }
+        bargraph.BarGraph()
         BottomAppBar(navController)
-    }
-}
-
-//Class to convert the float values to String for X-axis Label in Bar graph
-class DayAxisValueFormatter() : ValueFormatter() {
-    private val labels = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-    override fun getFormattedValue(value: Float): String {
-        var label = ""
-        when (value) {
-            0.0F -> label = labels[0]
-            1.0F -> label = labels[1]
-            2.0F -> label = labels[2]
-            3.0F -> label = labels[3]
-            4.0F -> label = labels[4]
-            5.0F -> label = labels[5]
-            6.0F -> label = labels[6]
-        }
-        return label
     }
 }
 
@@ -439,6 +231,7 @@ fun BottomAppBar(navController: NavHostController) {
                     ) {
                         NavigationItem(navController , Screen.Home, Icons.Default.Home, "Home")
                         NavigationItem(navController, Screen.Notifications, Icons.Default.Notifications, "Notification")
+                        NavigationItem(navController, Screen.Add, Icons.Default.Add, "Add")
                         NavigationItem(navController, Screen.History, Icons.Default.Refresh, "History")
                         NavigationItem(navController, Screen.Profile, Icons.Default.AccountCircle, "Profile")
                     }
@@ -470,27 +263,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object Notifications : Screen("profile")
     object History : Screen("profile")
-}
-
-@Composable
-private fun DisplayText(
-    animateNumber: State<Float>
-) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Text that shows the number inside the circle
-        Text(
-            text = (animateNumber.value).toInt().toString(),
-            fontSize = 18.sp,
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Steps",
-            fontSize = 16.sp,
-        )
-    }
+    object Add : Screen("Add")
 }
 
 
