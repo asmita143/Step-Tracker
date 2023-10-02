@@ -10,10 +10,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -27,74 +25,47 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
 import com.example.stepcounter.ui.theme.StepCounterTheme
-import com.example.stepcounter.ui.theme.md_theme_light_background
-import com.example.stepcounter.ui.theme.md_theme_light_onSecondary
-import com.example.stepcounter.ui.theme.md_theme_light_tertiary
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.ValueFormatter
+import kotlin.math.sqrt
 
 class MainActivity : ComponentActivity() {
-    val stepCounter = StepCounter()
+    private val stepCounter = StepCounter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -105,12 +76,20 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Home(navController)
+                    NavHost(navController = navController, startDestination = Screen.Home.route) {
+                        composable(route = Screen.Home.route) {
+                            // Create and display the content for the Home screen
+                            Home(navController, stepCounter.getTotalStepsTaken())
+                        }
+                        composable(route = Screen.Profile.route) {
+                            // Create and display the content for the Profile screen
+                            ProfileScreen(navController)
+                        }
+                    }
                 }
             }
         }
         stepCounter.initialize(this)
-        stepCounter.startListening()
     }
 
     override fun onResume() {
@@ -124,51 +103,60 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-class StepCounter {
+class StepCounter: SensorEventListener {
     private var sensorManager: SensorManager? = null
-    private var stepCounterSensor: Sensor? = null
-    private var listener: SensorEventListener? = null
+    private var accelerometer: Sensor? = null
+    private var magnitudePreviousStep = 0f
+    private var totalSteps : MutableState<Float> = mutableStateOf(0f)
 
     fun initialize(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        stepCounterSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+    }
 
-        listener = object : SensorEventListener {
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                
-            }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
 
-            override fun onSensorChanged(event: SensorEvent?) {
-                if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-                    val steps = event.values[0].toInt()
-                    Log.d("MSG", "$steps")
-                }
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+            val x : Float = event.values[0]
+            val y : Float = event.values[1]
+            val z :Float = event.values[2]
+            val magnitude : Float = sqrt(x*x + y*y + z*z)
+
+            var magnitudeDelta : Float = magnitude - magnitudePreviousStep
+
+            magnitudePreviousStep = magnitude
+
+            if(magnitudeDelta > 6) {
+                totalSteps.value++
             }
+            val step = totalSteps.value.toInt()
+
+            Log.d("MSG", "$step")
+
         }
     }
 
     fun startListening() {
-        sensorManager?.registerListener(listener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager?.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     fun stopListening() {
-        sensorManager?.unregisterListener(listener)
+        sensorManager?.unregisterListener(this)
+    }
+
+    fun getTotalStepsTaken(): Float {
+        return totalSteps.value
     }
 }
 
-      
-    // short overview   
-//Initialized the step counter in onCreate of MainActivity.
-// Started listening to the step counter in onResume() and stopped in onPause().
-// then we have a callback function onAccuracyChange() incase the sensor accurcy changed. 
-// please add whatever you think is relevant.
-
 @Composable
-fun Home(navController: NavHostController) {
+fun Home(navController: NavHostController, totalStepsTaken: Float) {
     var checked by remember { mutableStateOf(true) }
     val bargraph = StatisticsGraph()
     val stepInfo = StepInfoTop()
-
 
     Column(
         modifier = Modifier
@@ -177,7 +165,7 @@ fun Home(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        stepInfo.StepsInfoSection()
+        stepInfo.StepsInfoSection(totalStepsTaken)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -202,6 +190,51 @@ fun Home(navController: NavHostController) {
     }
 }
 
+@Composable
+fun ProfileScreen(navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Profile picture
+        Image(
+            painter = painterResource(id = R.drawable.profile_pic),
+            contentDescription = "Profile Picture",
+            modifier = Modifier
+                .size(120.dp)
+                .clip(shape = CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // User's name
+        Text(
+            text = "John Doe",
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // User's email
+        Text(
+            text = "johndoe@example.com",
+            style = androidx.compose.ui.text.TextStyle(
+                fontSize = 16.sp,
+                color = Color.Gray
+            )
+        )
+
+        BottomAppBar(navController)
+    }
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -220,7 +253,7 @@ fun BottomAppBar(navController: NavHostController) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 20.dp), // Adjust horizontal padding as needed
+                        .padding(horizontal = 30.dp), // Adjust horizontal padding as needed
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -229,10 +262,8 @@ fun BottomAppBar(navController: NavHostController) {
                             .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        NavigationItem(navController, Screen.Menu, Icons.Default.Menu, "Menu")
                         NavigationItem(navController , Screen.Home, Icons.Default.Home, "Home")
-                        NavigationItem(navController, Screen.Notifications, Icons.Default.Notifications, "Notification")
-                        NavigationItem(navController, Screen.Add, Icons.Default.Add, "Add")
-                        NavigationItem(navController, Screen.History, Icons.Default.Refresh, "History")
                         NavigationItem(navController, Screen.Profile, Icons.Default.AccountCircle, "Profile")
                     }
                 }
@@ -261,9 +292,7 @@ fun NavigationItem(
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Profile : Screen("profile")
-    object Notifications : Screen("profile")
-    object History : Screen("profile")
-    object Add : Screen("Add")
+    object Menu : Screen("Menu")
 }
 
 

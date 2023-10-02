@@ -20,7 +20,6 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,9 +45,9 @@ import com.example.stepcounter.ui.theme.md_theme_light_tertiary
 class StepInfoTop {
     @Composable
     fun StepsInfoSection(
+        totalSteps : Float,
         size: Dp = 150.dp,
-        target: Int = 13100,
-        stepsTaken: Float = 6550f,
+        target: Int = 500,
         shadowColor: Color = Color.LightGray,
         indicatorThickness: Dp = 8.dp,
         animationDuration: Int = 1000,
@@ -57,6 +56,7 @@ class StepInfoTop {
         val screenHeight = configuration.screenHeightDp.dp
         var stepsTakenRemember by remember { mutableStateOf(-1f) }
         var progress by remember { mutableStateOf(0.1f) }
+
         val animatedProgress = animateFloatAsState(
             targetValue = progress,
             animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
@@ -64,7 +64,7 @@ class StepInfoTop {
 
         // This is to animate the foreground indicator
         val stepsTakenAnimate = animateFloatAsState(
-            targetValue = stepsTakenRemember,
+            targetValue = totalSteps,
             animationSpec = tween(
                 durationMillis = animationDuration
             ), label = ""
@@ -72,8 +72,9 @@ class StepInfoTop {
 
         // This is to start the animation when the activity is opened
         LaunchedEffect(Unit) {
-            stepsTakenRemember = stepsTaken
+            stepsTakenRemember = totalSteps
         }
+
 
         Card(
             modifier = Modifier
@@ -150,7 +151,7 @@ class StepInfoTop {
                     }
 
                     // Display the data usage value
-                    DisplayText(stepsTakenAnimate)
+                    DisplayText(stepsTakenAnimate.value)
                 }
                 Box(
                     modifier = Modifier
@@ -170,7 +171,7 @@ class StepInfoTop {
                                 .padding(10.dp),
                         ) {
                             Text(text = "Remaining", fontSize = 14.sp)
-                            Text(text = (target - stepsTaken.toInt()).toString(), fontSize = 18.sp)
+                            Text(text = (target - totalSteps.toInt()).toString(), fontSize = 18.sp)
                         }
                         Column(
                             modifier = Modifier
@@ -187,7 +188,7 @@ class StepInfoTop {
 
     @Composable
     private fun DisplayText(
-        animateNumber: State<Float>
+        animateNumber: Float
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -195,7 +196,7 @@ class StepInfoTop {
         ) {
             // Text that shows the number inside the circle
             Text(
-                text = (animateNumber.value).toInt().toString(),
+                text = (animateNumber).toInt().toString(),
                 fontSize = 18.sp,
             )
             Spacer(modifier = Modifier.height(2.dp))
