@@ -53,8 +53,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.stepcounter.firstScreen.InputDataPage
-import com.example.stepcounter.foodScreen.CaloriesScreen
 import com.example.stepcounter.foodScreen.FoodTrackerUI
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import com.example.stepcounter.ui.theme.md_theme_light_background
