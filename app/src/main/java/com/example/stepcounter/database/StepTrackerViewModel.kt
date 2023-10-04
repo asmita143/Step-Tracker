@@ -19,6 +19,10 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         return db.stepDAO.getStepsByDate(date)
     }
 
+    fun getStepsSevenDays(date: Date): LiveData<Step> {
+        return db.stepDAO.getStepSevenDays(date)
+    }
+
     fun addSteps(step: Step) {
         viewModelScope.launch {
             db.stepDAO.addSteps(step)

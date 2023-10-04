@@ -8,6 +8,6 @@ import java.sql.Date
 data class Step(
     @PrimaryKey(autoGenerate = true)
     val stepId: Long,
-    val date: Date,
+    val date: String,
     val stepAmount: Long,
 )

@@ -18,4 +18,7 @@ interface StepDAO {
 
     @Query("SELECT * FROM step")
     fun getAllSteps(): LiveData<List<Step>>
+
+    @Query("SELECT * FROM step where date = :date")
+    fun getStepSevenDays(date: Date): LiveData<Step>
 }
