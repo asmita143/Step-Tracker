@@ -120,7 +120,7 @@ class DayAxisValueFormatter() : ValueFormatter() {
         for (i in 0 until 7) {
             val dayName = currentDay.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
             daysOfWeek.add(dayName)
-            currentDay = currentDay.plusDays(1) // Move to the next day
+            currentDay = currentDay.minusDays(1) // Move to the next day
         }
 
         Log.d("MSG1", "${daysOfWeek}")
