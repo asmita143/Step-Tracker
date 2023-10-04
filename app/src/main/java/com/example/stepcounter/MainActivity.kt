@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,16 +63,34 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
+import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.Step
 import com.example.stepcounter.ui.theme.StepCounterTheme
+import java.time.DayOfWeek
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.sqrt
+
 
 class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
+    private val viewModel: StepTrackerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             val navController = rememberNavController()
+            val currentTimeMillis  = System.currentTimeMillis()
+            val instant = Instant.ofEpochMilli(currentTimeMillis)
+            val zoneId = ZoneId.of("UTC")
+            val formattedTime = instant.atZone(zoneId)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val currentDate = instant.atZone(zoneId).toLocalDate()
+            val dayOfWeek = currentDate.dayOfWeek
+
+            Log.d("MSGtime" , "$formattedTime $dayOfWeek")
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -79,13 +99,15 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = Screen.Home.route) {
                         composable(route = Screen.Home.route) {
                             // Create and display the content for the Home screen
-                            Home(navController, stepCounter.getTotalStepsTaken())
+                            Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
                             ProfileScreen(navController)
                         }
                     }
+
+                    //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 160))
                 }
             }
         }
@@ -134,8 +156,6 @@ class StepCounter: SensorEventListener {
             }
             val step = totalSteps.value.toInt()
 
-            Log.d("MSG", "$step")
-
         }
     }
 
@@ -153,10 +173,17 @@ class StepCounter: SensorEventListener {
 }
 
 @Composable
-fun Home(navController: NavHostController, totalStepsTaken: Float) {
+fun Home(
+    navController: NavHostController,
+    totalStepsTaken: Float,
+    viewModel: StepTrackerViewModel,
+    dayOfWeek: DayOfWeek
+) {
     var checked by remember { mutableStateOf(true) }
     val bargraph = StatisticsGraph()
     val stepInfo = StepInfoTop()
+    val step = viewModel.getAllSteps().observeAsState(listOf())
+    Log.d("MSGHome", step.value.size.toString())
 
     Column(
         modifier = Modifier
@@ -185,7 +212,7 @@ fun Home(navController: NavHostController, totalStepsTaken: Float) {
             Text(text = "Week", Modifier.padding(start = 10.dp, end = 20.dp))
         }
 
-        bargraph.BarGraph()
+        bargraph.BarGraph(step.value, dayOfWeek)
         BottomAppBar(navController)
     }
 }
