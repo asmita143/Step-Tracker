@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -66,6 +67,17 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // For barcode scanner
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
+
+    // For easier logging
+    implementation("com.jakewharton.timber:timber:5.0.4")
 
     //For BarGraph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
