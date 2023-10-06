@@ -1,7 +1,11 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+//    id("org.jetbrains.kotlin.kapt")
+//    kotlin("kapt")
+//    id("com.google.dagger.hilt.android") version "2.45" apply false
 }
 
 android {
@@ -43,6 +47,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -51,6 +56,7 @@ android {
 }
 
 dependencies {
+    val lifecycle_version = "2.6.2" // 2.5.1
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -76,9 +82,19 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
 
-    // For easier logging
-    implementation("com.jakewharton.timber:timber:5.0.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+//    implementation("com.google.dagger:hilt-android:2.45")
+//    implementation("com.google.dagger:hilt-compiler:2.45")
+//    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     //For BarGraph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version") // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
 }
