@@ -2,7 +2,9 @@ package com.example.stepcounter.Homepage
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -54,7 +58,7 @@ class StatisticsGraph{
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp)
-                .height(screenHeight / 2 - 130.dp)
+                .height(screenHeight / 2 - 145.dp)
                 .background(MaterialTheme.colorScheme.primary)
 
         ) {
@@ -115,7 +119,7 @@ class DayAxisValueFormatter() : ValueFormatter() {
         val daysOfWeek = mutableListOf<String>()
 
         // Add the days of the week, starting from today
-        var currentDay = currentDate.minusDays(1)
+        var currentDay = currentDate
 
         for (i in 0 until 7) {
             val dayName = currentDay.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())

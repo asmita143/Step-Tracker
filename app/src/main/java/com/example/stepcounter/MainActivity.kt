@@ -12,8 +12,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,8 +23,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -50,13 +46,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -64,7 +57,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
 import com.example.stepcounter.database.StepTrackerViewModel
-import com.example.stepcounter.database.entities.Step
+import com.example.stepcounter.firstScreen.InputDataPage
+import com.example.stepcounter.foodScreen.CaloriesPerProduct
+import com.example.stepcounter.foodScreen.CaloriesScreen
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import java.time.DayOfWeek
 import java.time.Instant
@@ -103,11 +98,21 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
-                            ProfileScreen(navController)
+                            InputDataPage(navController)
                         }
+                        composable(route = Screen.Menu.route) {
+                            // Create and display the content for the Profile screen
+                           CaloriesScreen(navController)
+                        }
+
+                        composable("CaloriesPerProduct") {
+                            CaloriesPerProduct()
+                        }
+
                     }
 
                     //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 160))
+
                 }
             }
         }
@@ -154,7 +159,6 @@ class StepCounter: SensorEventListener {
             if(magnitudeDelta > 6) {
                 totalSteps.value++
             }
-            val step = totalSteps.value.toInt()
 
         }
     }
@@ -213,52 +217,14 @@ fun Home(
         }
 
         bargraph.BarGraph(step.value, dayOfWeek)
-        BottomAppBar(navController)
-    }
-}
-
-@Composable
-fun ProfileScreen(navController: NavHostController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Profile picture
-        Image(
-            painter = painterResource(id = R.drawable.profile_pic),
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(120.dp)
-                .clip(shape = CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.weight(1f))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // User's name
-        Text(
-            text = "John Doe",
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // User's email
-        Text(
-            text = "johndoe@example.com",
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-        )
-
-        BottomAppBar(navController)
+        {
+            BottomAppBar(navController)
+        }
     }
 }
 
@@ -321,6 +287,4 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object Menu : Screen("Menu")
 }
-
-
 
