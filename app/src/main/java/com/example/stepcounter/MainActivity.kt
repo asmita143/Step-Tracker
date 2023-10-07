@@ -41,13 +41,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        loadData()
         setContent {
             val navController = rememberNavController()
             val currentTimeMillis  = System.currentTimeMillis()
@@ -102,11 +102,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController)
+                           CaloriesScreen(navController, currentDate)
                         }
 
                         composable("CaloriesPerProduct") {
-                            CaloriesPerProduct()
+                            CaloriesPerProduct(navController)
                         }
 
                     }
@@ -126,7 +126,27 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        saveData()
         stepCounter.stopListening()
+    }
+
+    private fun saveData() {
+
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+
+        val editor = sharedPreferences.edit()
+        editor.putFloat("key1", stepCounter.getTotalStepsTaken())
+        Log.d("MSGSaved", editor.putFloat("key1", stepCounter.getTotalStepsTaken()).toString())
+        editor.apply()
+    }
+
+    private fun loadData() {
+
+        // In this function we will retrieve data
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        Log.d("MSGLoad" , sharedPreferences.getFloat("key1", 0f).toString())
+        val savedNumber = sharedPreferences.getFloat("key1", 0f)
+        stepCounter.setTotalStepsTaken(savedNumber)
     }
 }
 
@@ -134,7 +154,7 @@ class StepCounter: SensorEventListener {
     private var sensorManager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var magnitudePreviousStep = 0f
-    private var totalSteps : MutableState<Float> = mutableStateOf(0f)
+    private var totalSteps : MutableState<Float> = mutableFloatStateOf(0f)
 
     fun initialize(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -174,6 +194,12 @@ class StepCounter: SensorEventListener {
     fun getTotalStepsTaken(): Float {
         return totalSteps.value
     }
+
+    fun setTotalStepsTaken(steps : Float) {
+        this.totalSteps.value = steps
+        Log.d("MSGSet", totalSteps.value.toString())
+    }
+
 }
 
 @Composable

@@ -54,7 +54,8 @@ fun InputDataPage(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .background(Color(0xFFDCEEF3)),
+                    .background(Color(0xFFDCEEF3))
+                    .padding(10.dp),
                 contentScale = ContentScale.Fit
             )
         }

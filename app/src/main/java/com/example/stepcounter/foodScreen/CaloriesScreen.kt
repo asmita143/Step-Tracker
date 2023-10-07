@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,27 +36,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.stepcounter.BottomAppBar
 import com.example.stepcounter.R
+import java.time.LocalDate
 
 @Composable
-fun CaloriesScreen(navController: NavHostController) {
+fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
     var isOverlayVisible by remember { mutableStateOf(false) }
     var isEatenTodayOverlayVisible by remember { mutableStateOf(false) }
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -67,7 +64,6 @@ fun CaloriesScreen(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .border(BorderStroke(2.dp, SolidColor(Color.Red)))
 
         ) {
             //this box is for the date
@@ -79,8 +75,7 @@ fun CaloriesScreen(navController: NavHostController) {
                 Row(modifier = Modifier.padding(20.dp)) {
                     Column {
                         Text(text = "Today")
-
-                        Text(text = "18 February")
+                        Text(text = currentDate.dayOfMonth.toString() + " " + currentDate.month.toString())
                     }
                 }
             }
@@ -96,23 +91,43 @@ fun CaloriesScreen(navController: NavHostController) {
                     .fillMaxWidth()
 
             ) {
-                Row(modifier = Modifier.padding(20.dp)) {
-                    Column {
-                        Text(text = "1,258", fontSize = 20.sp)
-                        Text(text = ("Calories Today").uppercase())
+                Row(modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                )
+                {
+                    Column(
+                        modifier = Modifier
+                            .shadow(elevation = 5.dp)
+                            .background(Color.White)
+                            .padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(text = "1,258", fontSize = 15.sp)
+                        Text(text = ("Calories Eaten"))
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .shadow(elevation = 5.dp)
+                            .background(Color.White)
+                            .padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(text = "958", fontSize = 15.sp)
+                        Text(text = ("Burnt Calories"))
                     }
                 }
             }
         }
 
-        //Spacer(modifier = Modifier.height(200.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         Row(
             modifier = Modifier
-                .weight(1f, false)
-                .padding(2.dp)
-                .fillMaxWidth()
-                .border(BorderStroke(2.dp, SolidColor(Color.Black))),
+                //.weight(1f, false)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -172,8 +187,14 @@ fun CaloriesScreen(navController: NavHostController) {
                 ) {
                     EatenTodayOverlay(onCloseClick = { isEatenTodayOverlayVisible = false }, navController)
                 }
-
             }
+        }
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+        )
+        {
+            com.example.stepcounter.BottomAppBar(navController)
         }
     }
 }
@@ -325,7 +346,6 @@ fun EatenTodayOverlay(onCloseClick: () -> Unit, navController: NavHostController
 @Preview(showBackground = true)
 @Composable
 fun CaloriesPreview (){
-    CaloriesScreen(rememberNavController())
 }
 
 
