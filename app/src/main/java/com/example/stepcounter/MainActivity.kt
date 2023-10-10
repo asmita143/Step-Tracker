@@ -1,7 +1,12 @@
 package com.example.stepcounter
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.TaskInfo
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -65,13 +70,16 @@ import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import kotlin.math.sqrt
 
 
 class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
     private val viewModel: StepTrackerViewModel by viewModels()
+    private val foodViewModal: StepTrackerViewModel by viewModels()
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadData()
@@ -85,7 +93,8 @@ class MainActivity : ComponentActivity() {
             val currentDate = instant.atZone(zoneId).toLocalDate()
             val dayOfWeek = currentDate.dayOfWeek
 
-            Log.d("MSGtime" , "$formattedTime $dayOfWeek")
+            foodViewModal.fetchAndSaveItems()
+
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -93,8 +102,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(navController = navController, startDestination = Screen.Home.route) {
                         composable(route = Screen.Home.route) {
-                            // Create and display the content for the Home screen
+                            //Create and display the content for the Home screen
                             Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
+                            //AddNewMeal(foodViewModal)
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
@@ -108,16 +118,15 @@ class MainActivity : ComponentActivity() {
                         composable("CaloriesPerProduct") {
                             CaloriesPerProduct(navController)
                         }
-
                     }
-
                     //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 160))
-
                 }
             }
         }
         stepCounter.initialize(this)
+
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -141,7 +150,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loadData() {
-
         // In this function we will retrieve data
         val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
         Log.d("MSGLoad" , sharedPreferences.getFloat("key1", 0f).toString())
@@ -150,11 +158,19 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private class EndOfDayReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        Log.d("MSG", "Alarm just fired")
+
+    }
+}
+
 class StepCounter: SensorEventListener {
     private var sensorManager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var magnitudePreviousStep = 0f
     private var totalSteps : MutableState<Float> = mutableFloatStateOf(0f)
+    private var previousTotalSteps : MutableState<Float> = mutableFloatStateOf(0f)
 
     fun initialize(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -179,7 +195,6 @@ class StepCounter: SensorEventListener {
             if(magnitudeDelta > 6) {
                 totalSteps.value++
             }
-
         }
     }
 
@@ -201,6 +216,7 @@ class StepCounter: SensorEventListener {
     }
 
 }
+
 
 @Composable
 fun Home(

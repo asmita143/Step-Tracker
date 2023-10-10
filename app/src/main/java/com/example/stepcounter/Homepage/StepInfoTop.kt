@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,7 +55,7 @@ class StepInfoTop {
     ){
         val configuration = LocalConfiguration.current
         val screenHeight = configuration.screenHeightDp.dp
-        var stepsTakenRemember by remember { mutableStateOf(-1f) }
+        var stepsTakenRemember by remember { mutableFloatStateOf(0f) }
         var progress by remember { mutableStateOf(0.1f) }
 
         val animatedProgress = animateFloatAsState(
