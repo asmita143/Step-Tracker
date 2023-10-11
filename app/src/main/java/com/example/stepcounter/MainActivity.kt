@@ -215,7 +215,8 @@ fun Home(
     val stepInfo = StepInfoTop()
     val step = viewModel.getAllSteps().observeAsState(listOf())
     Log.d("MSGHome", step.value.size.toString())
-
+val caloriesBurned = totalStepsTaken * 0.04f // steps * stride length * weight * constant(0.0002) so 0.4 is the average excluding the steps 
+        val targetCalories = 500f
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -224,6 +225,20 @@ fun Home(
     )
     {
         stepInfo.StepsInfoSection(totalStepsTaken)
+
+         if (caloriesBurned < targetCalories) {
+                Text(
+                    text = "You should burn more calories today!",
+                    color = Color.Red,
+                    
+                )
+            } else {
+                Text(
+                    text = "Great job on reaching your calorie burn goal!",
+                    color = Color.Green,
+                    
+                )
+            }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
