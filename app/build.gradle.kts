@@ -6,6 +6,7 @@ plugins {
 //    id("org.jetbrains.kotlin.kapt")
 //    kotlin("kapt")
 //    id("com.google.dagger.hilt.android") version "2.45" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 
 android {
@@ -97,4 +98,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version") // LiveData
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
+
+    // Retrofit dependencies
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 }

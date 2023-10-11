@@ -6,12 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import com.example.stepcounter.App
 import com.example.stepcounter.App.Companion.appContext
+import com.example.stepcounter.api.BarcodeProductApi
 import com.example.stepcounter.constants.SCANNER_TAG
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 
 // Code based on https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner
 // and https://www.youtube.com/watch?v=keiuMUX1k0k
@@ -49,6 +51,18 @@ class BarcodeScanner {
                 // Task completed successfully
                 val result = barcode.rawValue
                 Log.d(SCANNER_TAG, "initial value: $result")
+                runBlocking {
+                    try {
+                        val productInfo = BarcodeProductApi.service.getInfoByBarCode(
+                            barCode = result.toString(),
+                            fields = "product_name,nutriments"
+                        )
+                        Log.d("PRDCT", productInfo.toString())
+                    } catch (e: Exception) {
+                        Log.d("PRDCT", "No product found")
+                    }
+
+                }
 
                 when (barcode.valueType) {
                     Barcode.TYPE_URL -> {
