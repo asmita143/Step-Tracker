@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+// Code based on https://www.youtube.com/watch?v=cAJChWxHvuc&list=PLzxawGXQRFsyVnwtFGoLlwdPr039g6WLe&index=2
 object BarcodeProductApi {
     private const val URL = "https://us.openfoodfacts.org/api/v2/"
 

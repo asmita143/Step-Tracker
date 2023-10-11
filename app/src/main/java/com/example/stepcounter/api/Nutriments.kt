@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.lang.Exception
 
+// Code based on https://www.youtube.com/watch?v=cAJChWxHvuc&list=PLzxawGXQRFsyVnwtFGoLlwdPr039g6WLe&index=2
 @Serializable
 data class Nutriments(
     @SerialName("carbohydrates") val carbohydrates: StringDouble = StringDouble(),
