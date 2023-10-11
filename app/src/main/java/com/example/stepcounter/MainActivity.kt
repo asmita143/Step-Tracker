@@ -3,7 +3,6 @@ package com.example.stepcounter
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.app.TaskInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -62,7 +61,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
 import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.Step
 import com.example.stepcounter.firstScreen.InputDataPage
+import com.example.stepcounter.foodScreen.AddNewMeal
 import com.example.stepcounter.foodScreen.CaloriesPerProduct
 import com.example.stepcounter.foodScreen.CaloriesScreen
 import com.example.stepcounter.ui.theme.StepCounterTheme
@@ -72,7 +73,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import kotlin.math.sqrt
-
 
 class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
@@ -94,6 +94,7 @@ class MainActivity : ComponentActivity() {
             val dayOfWeek = currentDate.dayOfWeek
 
             foodViewModal.fetchAndSaveItems()
+            scheduleDailyTask(this)
 
             StepCounterTheme {
                 Surface(
@@ -103,12 +104,12 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = Screen.Home.route) {
                         composable(route = Screen.Home.route) {
                             //Create and display the content for the Home screen
-                            Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
-                            //AddNewMeal(foodViewModal)
+                            //Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
+                            AddNewMeal(foodViewModal)
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
-                            InputDataPage(navController)
+                            InputDataPage(navController, this@MainActivity)
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
@@ -124,10 +125,27 @@ class MainActivity : ComponentActivity() {
             }
         }
         stepCounter.initialize(this)
-
     }
 
+    fun scheduleDailyTask(context: Context) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, EndOfDayReceiver::class.java)
+        val pendingIntent =
+            PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
+        // Set the alarm to trigger at midnight
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.timeInMillis = System.currentTimeMillis()
+        calendar.set(Calendar.HOUR_OF_DAY, 16) // End of the day
+        calendar.set(Calendar.MINUTE, 46)
+
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+    }
     override fun onResume() {
         super.onResume()
         stepCounter.startListening()
@@ -203,6 +221,7 @@ class StepCounter: SensorEventListener {
     }
 
     fun stopListening() {
+        previousTotalSteps = totalSteps
         sensorManager?.unregisterListener(this)
     }
 

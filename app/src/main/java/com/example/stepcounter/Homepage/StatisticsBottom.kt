@@ -2,7 +2,6 @@ package com.example.stepcounter.Homepage
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -41,16 +38,30 @@ class StatisticsGraph{
         val myArrayList = ArrayList<Step>()
 
         if(value.isNotEmpty()) {
-            for(i in value.size - 7 until value.size) {
-                myArrayList.add(Step(value[i].stepId, value[i].date,value[i].stepAmount))
+            if (value.size < 7){
+                for(i in value.indices) {
+                    myArrayList.add(Step(value[i].stepId, value[i].date,value[i].stepAmount))
+                }
+            } else {
+                for(i in value.size - 7 until value.size) {
+                    myArrayList.add(Step(value[i].stepId, value[i].date,value[i].stepAmount))
+                }
             }
         }
 
         if(myArrayList.isNotEmpty()){
-            for (i in 0..6) {
-                val day = myArrayList[i].date.split("-")
-                entries.add(BarEntry(i.toFloat(),myArrayList[i].stepAmount.toFloat()))
-                Log.d("MSGInside", day[1]+ "/" +day[2])
+            if (myArrayList.size < 7) {
+                for (i in 0 until myArrayList.size) {
+                    val day = myArrayList[i].date.split("-")
+                    entries.add(BarEntry(i.toFloat(),myArrayList[i].stepAmount.toFloat()))
+                    Log.d("MSGInside", day[1]+ "/" +day[2])
+                }
+            } else {
+                for (i in 0..6) {
+                    val day = myArrayList[i].date.split("-")
+                    entries.add(BarEntry(i.toFloat(),myArrayList[i].stepAmount.toFloat()))
+                    Log.d("MSGInside", day[1]+ "/" +day[2])
+                }
             }
         }
 

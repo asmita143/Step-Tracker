@@ -1,10 +1,8 @@
 package com.example.stepcounter.firstScreen
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,18 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.stepcounter.MainActivity
 import com.example.stepcounter.R
 
 @Composable
-fun InputDataPage(navController: NavHostController) {
+fun InputDataPage(navController: NavHostController, mainActivity: MainActivity) {
     val nameField = remember { mutableStateOf(TextFieldValue()) }
     val heightField = remember { mutableStateOf(TextFieldValue()) }
     val weightField = remember { mutableStateOf(TextFieldValue()) }
