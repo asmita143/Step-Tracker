@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,7 +123,7 @@ fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
                     )
                 ) {
                     MoreInfoOverlay(
-                        onCloseClick = { isOverlayVisible = false }
+                        onCloseClick = { isOverlayVisible = false },navController
                     )
                 }
 
@@ -166,7 +167,7 @@ fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
 }
 
 @Composable
-fun MoreInfoOverlay(onCloseClick: () -> Unit) {
+fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -209,23 +210,25 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit) {
             fontSize = 16.sp,
             color = Color.Black
         )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
+
         Spacer(modifier = Modifier.height(16.dp))
         SmallFloatingActionButton(
             onClick = { /* Do something when the button in the overlay is clicked */ },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .clickable {
+                    navController.navigate("MealOfDay")
+                },
         ) {
             Row {
                 Text("Add new entries")
                 Spacer(modifier = Modifier.width(10.dp))
-                Icon(Icons.Filled.Add, "Small floating action button.")
-            }
 
+                Icon(Icons.Filled.Add,
+                    "Small floating action button.",
+                    )
+            }
         }
+
     }
 }
 
