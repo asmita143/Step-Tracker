@@ -1,87 +1,123 @@
 package com.example.stepcounter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.example.stepcounter.foodScreen.AddNewMeal
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.stepcounter.Homepage.StatisticsGraph
+import com.example.stepcounter.Homepage.StepInfoTop
+import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.firstScreen.DisplayDataScreen
+import com.example.stepcounter.firstScreen.InputDataPage
+import com.example.stepcounter.foodScreen.CaloriesPerProduct
+import com.example.stepcounter.foodScreen.CaloriesScreen
 import com.example.stepcounter.ui.theme.StepCounterTheme
-import com.example.stepcounter.ui.theme.md_theme_light_background
-import com.example.stepcounter.ui.theme.md_theme_light_onSecondary
-import com.example.stepcounter.ui.theme.md_theme_light_tertiary
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.ValueFormatter
+import java.time.DayOfWeek
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import kotlin.math.sqrt
+
 
 class MainActivity : ComponentActivity() {
+    private val stepCounter = StepCounter()
+    private val viewModel: StepTrackerViewModel by viewModels()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadData()
         setContent {
+            val navController = rememberNavController()
+            val currentTimeMillis  = System.currentTimeMillis()
+            val instant = Instant.ofEpochMilli(currentTimeMillis)
+            val zoneId = ZoneId.of("UTC")
+            val formattedTime = instant.atZone(zoneId)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val currentDate = instant.atZone(zoneId).toLocalDate()
+            val dayOfWeek = currentDate.dayOfWeek
+
+            Log.d("MSGtime" , "$formattedTime $dayOfWeek")
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                   Home()
+
+                    NavHost(navController = navController, startDestination = Screen.Home.route) {
+                        composable(route = Screen.Home.route) {
+                            // Create and display the content for the Home screen
+                            Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
+                        }
+                        composable(route = Screen.Profile.route) {
+                            // Create and display the content for the Profile screen
+                            InputDataPage(navController = navController ,this@MainActivity)
+                        }
+                        composable(route = Screen.Menu.route) {
+                            // Create and display the content for the Profile screen
+                           CaloriesScreen(navController, currentDate)
+                        }
+                        composable("CaloriesPerProduct") {
+                            CaloriesPerProduct(navController)
+                        }
+                        composable("InputDataPage") {
+                            DisplayDataScreen(navController,this@MainActivity)
+                        }
+                    }
                 }
             }
         }
-    }
-}
- /*stepCounter.initialize(this)
+        stepCounter.initialize(this)
     }
 
     override fun onResume() {
@@ -91,214 +127,103 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        saveData()
         stepCounter.stopListening()
     }
-}*/
 
-class StepCounter {
+    private fun saveData() {
+
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+
+        val editor = sharedPreferences.edit()
+        editor.putFloat("key1", stepCounter.getTotalStepsTaken())
+        Log.d("MSGSaved", editor.putFloat("key1", stepCounter.getTotalStepsTaken()).toString())
+        editor.apply()
+    }
+
+    private fun loadData() {
+
+        // In this function we will retrieve data
+        val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+        Log.d("MSGLoad" , sharedPreferences.getFloat("key1", 0f).toString())
+        val savedNumber = sharedPreferences.getFloat("key1", 0f)
+        stepCounter.setTotalStepsTaken(savedNumber)
+    }
+}
+
+class StepCounter: SensorEventListener {
     private var sensorManager: SensorManager? = null
-    private var stepCounterSensor: Sensor? = null
-    private var listener: SensorEventListener? = null
+    private var accelerometer: Sensor? = null
+    private var magnitudePreviousStep = 0f
+    private var totalSteps : MutableState<Float> = mutableFloatStateOf(0f)
 
     fun initialize(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        stepCounterSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+    }
 
-        listener = object : SensorEventListener {
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+            val x : Float = event.values[0]
+            val y : Float = event.values[1]
+            val z :Float = event.values[2]
+            val magnitude : Float = sqrt(x*x + y*y + z*z)
+
+            var magnitudeDelta : Float = magnitude - magnitudePreviousStep
+
+            magnitudePreviousStep = magnitude
+
+            if(magnitudeDelta > 6) {
+                totalSteps.value++
             }
 
-            override fun onSensorChanged(event: SensorEvent?) {
-                if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-                    val steps = event.values[0].toInt()
-                    
-                }
-            }
         }
     }
 
     fun startListening() {
-        sensorManager?.registerListener(listener, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager?.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     fun stopListening() {
-        sensorManager?.unregisterListener(listener)
+        sensorManager?.unregisterListener(this)
     }
+
+    fun getTotalStepsTaken(): Float {
+        return totalSteps.value
+    }
+
+    fun setTotalStepsTaken(steps : Float) {
+        this.totalSteps.value = steps
+        Log.d("MSGSet", totalSteps.value.toString())
+    }
+
 }
 
-      
-    // short overview   
-//Initialized the step counter in onCreate of MainActivity.
-// Started listening to the step counter in onResume() and stopped in onPause().
-// then we have a callback function onAccuracyChange() incase the sensor accurcy changed. 
-// please add whatever you think is relevant.
-
-@Preview(showBackground = true)
 @Composable
 fun Home(
-    size: Dp = 150.dp,
-    target: Int = 13100,
-    foregroundIndicatorColor: Color = Color(0xFF35898f),
-    shadowColor: Color = Color.LightGray,
-    indicatorThickness: Dp = 8.dp,
-    stepsTaken: Float = 6550f,
-    animationDuration: Int = 1000,
-    ) {
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
-    var progress by remember { mutableStateOf(0.1f) }
+    navController: NavHostController,
+    totalStepsTaken: Float,
+    viewModel: StepTrackerViewModel,
+    dayOfWeek: DayOfWeek
+) {
     var checked by remember { mutableStateOf(true) }
-    val animatedProgress = animateFloatAsState(
-        targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = ""
-    ).value
-    var stepsTakenRemember by remember {
-        mutableStateOf(-1f)
-    }
-
-    // This is to animate the foreground indicator
-    val stepsTakenAnimate = animateFloatAsState(
-        targetValue = stepsTakenRemember,
-        animationSpec = tween(
-            durationMillis = animationDuration
-        ), label = ""
-    )
-
-    //Hard coded values for testing the BarGraph
-    val entries = ArrayList<BarEntry>()
-
-    entries.add(BarEntry(0F,3000F))
-    entries.add(BarEntry(1F, 4050F))
-    entries.add(BarEntry(2F, 4500F))
-    entries.add(BarEntry(3F, 6110F))
-    entries.add(BarEntry(4F, 5500F))
-    entries.add(BarEntry(5F, 3550F))
-    entries.add(BarEntry(6F, 3300F))
-
-    // This is to start the animation when the activity is opened
-    LaunchedEffect(Unit) {
-        stepsTakenRemember = stepsTaken
-    }
+    val bargraph = StatisticsGraph()
+    val stepInfo = StepInfoTop()
+    val step = viewModel.getAllSteps().observeAsState(listOf())
+    Log.d("MSGHome", step.value.size.toString())
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight / 2)
-                .padding(20.dp)
-                .shadow(
-                    elevation = 20.dp,
-                    shape = RectangleShape,
-                    spotColor = Color.Black
-                ),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White,
-            ),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally
-            )
-            {
-                Box(
-                    modifier = Modifier
-                        .size(size)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Canvas(
-                        modifier = Modifier
-                            .size(size)
-                    ) {
-                        // For shadow
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(shadowColor, Color.White),
-                                center = Offset(x = this.size.width / 2, y = this.size.height / 2),
-                                radius = this.size.height / 2
-                            ),
-                            radius = this.size.height / 2,
-                            center = Offset(x = this.size.width / 2, y = this.size.height / 2)
-                        )
-
-                        // This is the white circle that appears on the top of the shadow circle
-                        drawCircle(
-                            color = md_theme_light_background,
-                            radius = (size / 2 - indicatorThickness).toPx(),
-                            center = Offset(x = this.size.width / 2, y = this.size.height / 2)
-                        )
-
-                        // Convert the stepsTaken to angle
-                        val sweepAngle = (stepsTakenAnimate.value) * 360 / target
-
-                        // Foreground indicator
-                        drawArc(
-                            color = md_theme_light_tertiary,
-                            startAngle = -90f,
-                            sweepAngle = sweepAngle,
-                            useCenter = false,
-                            style = Stroke(
-                                width = indicatorThickness.toPx(),
-                                cap = StrokeCap.Round
-                            ),
-                            size = Size(
-                                width = (size - indicatorThickness).toPx(),
-                                height = (size - indicatorThickness).toPx()
-                            ),
-                            topLeft = Offset(
-                                x = (indicatorThickness / 2).toPx(),
-                                y = (indicatorThickness / 2).toPx()
-                            )
-                        )
-                    }
-
-                    // Display the data usage value
-                    DisplayText(stepsTakenAnimate)
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(md_theme_light_onSecondary)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        Column(
-                            modifier = Modifier
-                                .padding(10.dp),
-                        ) {
-                            Text(text = "Remaining", fontSize = 14.sp)
-                            Text(text = (target - stepsTaken.toInt()).toString(), fontSize = 18.sp)
-                        }
-                        Column(
-                            modifier = Modifier
-                                .padding(10.dp)
-                        ) {
-                            Text(text = "Target", fontSize = 14.sp)
-                            Text(text = target.toString(), fontSize = 18.sp)
-                        }
-                    }
-                }
-            }
-        }
+        stepInfo.StepsInfoSection(totalStepsTaken)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -312,87 +237,81 @@ fun Home(
                     checked = it
                 },
                 colors = SwitchDefaults.colors(
-                    checkedTrackColor = Color.Gray,
+                    checkedTrackColor = MaterialTheme.colorScheme.inversePrimary,
                 ),
             )
-            Text(text = "Week", Modifier.padding(start = 10.dp))
+            Text(text = "Week", Modifier.padding(start = 10.dp, end = 20.dp))
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight / 2)
-                .padding(20.dp)
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = { context: Context ->
-                    val view = BarChart(context)
-                    view.legend.isEnabled = false
-                    val data = BarData(BarDataSet( entries, "Label 1"))
-                    view.data = data
-                    view
-                },
-                update = { view ->
-                    // Update the view
-                    val xAxisFormatter: ValueFormatter = DayAxisValueFormatter()
-                    var dataSet: BarDataSet = BarDataSet( entries, "Label 1")
-                    val data = BarData(dataSet)
-                    view.description.isEnabled = false
-                    view.data = data
-                    view.axisRight.isEnabled = false
-                    view.axisLeft.isEnabled = false
-                    view.xAxis.position = XAxis.XAxisPosition.BOTTOM
-                    view.xAxis.setDrawGridLines(false)
-                    view.animateXY(2000, 3000, Easing.EaseInSine)
-                    view.setTouchEnabled(true)
-                    view.xAxis.valueFormatter = xAxisFormatter
-                    view.invalidate()
-                }
-            )
+        bargraph.BarGraph(step.value, dayOfWeek)
+        Spacer(modifier = Modifier.weight(1f))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+        )
+        {
+            BottomAppBar(navController)
         }
-
     }
 }
 
-//Class to convert the float values to String for X-axis Label in Bar graph
-class DayAxisValueFormatter() : ValueFormatter() {
-    private val labels = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-    override fun getFormattedValue(value: Float): String {
-        var label = ""
-        when (value) {
-            0.0F -> label = labels[0]
-            1.0F -> label = labels[1]
-            2.0F -> label = labels[2]
-            3.0F -> label = labels[3]
-            4.0F -> label = labels[4]
-            5.0F -> label = labels[5]
-            6.0F -> label = labels[6]
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomAppBar(navController: NavHostController) {
+    Scaffold(
+        bottomBar = {
+            BottomAppBar(
+                modifier = Modifier
+                    .border(
+                        border = BorderStroke(
+                            width = 0.1.dp, // Border width
+                            color = Color.LightGray // Border color
+                        ),
+                    )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 30.dp), // Adjust horizontal padding as needed
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        NavigationItem(navController, Screen.Menu, Icons.Default.Menu, "Menu")
+                        NavigationItem(navController , Screen.Home, Icons.Default.Home, "Home")
+                        NavigationItem(navController, Screen.Profile, Icons.Default.AccountCircle, "Profile")
+                    }
+                }
+            }
+        },
+        content = {
+
         }
-        return label
-    }
+    )
 }
 
 @Composable
-private fun DisplayText(
-    animateNumber: State<Float>
+fun NavigationItem(
+    navController: NavHostController,
+    screen: Screen,
+    icon: ImageVector,
+    label: String
 ) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    IconButton(
+        onClick = { navController.navigate(screen.route) }
     ) {
-        // Text that shows the number inside the circle
-        Text(
-            text = (animateNumber.value).toInt().toString(),
-            fontSize = 18.sp,
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Steps",
-            fontSize = 16.sp,
-        )
+        Icon(imageVector = icon, contentDescription = label)
     }
 }
 
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object Profile : Screen("profile")
+    object Menu : Screen("Menu")
+}
 

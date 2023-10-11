@@ -1,5 +1,6 @@
 package com.example.stepcounter.firstScreen
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.foundation.background
@@ -8,38 +9,37 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.stepcounter.MainActivity
 import com.example.stepcounter.R
 
-@Preview
+
 @Composable
-fun InputDataPage() {
-    val nameField = remember { mutableStateOf(TextFieldValue()) }
-    val heightField = remember { mutableStateOf(TextFieldValue()) }
-    val weightField = remember { mutableStateOf(TextFieldValue()) }
-    val targetStepsField = remember { mutableStateOf(TextFieldValue()) }
+fun InputDataPage(navController: NavHostController, context: Context) {
+    var name by remember { mutableStateOf(TextFieldValue()) }
+    var height by remember { mutableStateOf(TextFieldValue()) }
+    var weight by remember { mutableStateOf(TextFieldValue()) }
+    var targetSteps by remember { mutableStateOf(TextFieldValue()) }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         // Logo Placeholder
         Box(
@@ -55,7 +55,8 @@ fun InputDataPage() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .background(Color(0xFFDCEEF3)),
+                    .background(Color(0xFFDCEEF3))
+                    .padding(10.dp),
                 contentScale = ContentScale.Fit
             )
         }
@@ -63,39 +64,42 @@ fun InputDataPage() {
         Spacer(modifier = Modifier.height(50.dp))
 
         // Text Fields
-        InputData(
-            value = nameField.value,
-            onValueChange = { nameField.value = it },
-            hint = "Name"
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        Text("Input User Data:")
+        InputData(value = name, onValueChange = { name = it }, hint = "Name")
+        InputData(value = height, onValueChange = { height = it }, hint = "Height")
+        InputData(value = weight, onValueChange = { weight = it }, hint = "Weight")
+        InputData(value = targetSteps, onValueChange = { targetSteps = it }, hint = "Target Steps")
 
-        InputData(
-            value = heightField.value,
-            onValueChange = { heightField.value = it },
-            hint = "Height"
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
-        InputData(
-            value = weightField.value,
-            onValueChange = { weightField.value = it },
-            hint = "Weight"
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        Button(modifier = Modifier
+            .fillMaxWidth(0.7f)
+            .background(MaterialTheme.colorScheme.inversePrimary),
+            onClick = {
+                // Save the user data to SharedPreferences
+                saveUserData("user_name", name.text, context )
+                saveUserData("user_height", height.text, context)
+                saveUserData("user_weight", weight.text, context)
+                saveUserData("user_target_steps", targetSteps.text, context)
 
-        InputData(
-            value = targetStepsField.value,
-            onValueChange = { targetStepsField.value = it },
-            hint = "Target Steps"
-        )
+                // Navigate to the next screen
+                navController.navigate("InputDataPage")
+            }
+        ) {
+            Text("Save and Continue")
+        }
 
-        Spacer(modifier = Modifier.height(25.dp))
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(55.dp)
+        )
+        {
+            com.example.stepcounter.BottomAppBar(navController)
+        }
 
 
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputData(
@@ -128,7 +132,6 @@ fun InputData(
             .shadow(4.dp, shape = RectangleShape), // Shadow and elevation
         shape = RoundedCornerShape(8.dp),
         trailingIcon = {
-
             if (isClearButtonVisible) {
                 IconButton(
                     onClick = {
@@ -141,8 +144,18 @@ fun InputData(
             }
 
         },
+    )
 
-        )
 }
+
+
+
+fun saveUserData(key: String, value: String, context: Context) {
+    val sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString(key, value)
+    editor.apply()
+}
+
 
 

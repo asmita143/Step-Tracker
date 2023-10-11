@@ -134,8 +134,6 @@ fun AddNewMeal() {
 
         }
     }
-
-
 }
 
 
