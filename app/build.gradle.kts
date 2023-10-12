@@ -1,7 +1,13 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+//    id("org.jetbrains.kotlin.kapt")
+//    kotlin("kapt")
+//    id("com.google.dagger.hilt.android") version "2.45" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 
 android {
@@ -31,11 +37,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
     buildFeatures {
         compose = true
@@ -51,6 +57,7 @@ android {
 }
 
 dependencies {
+    val lifecycle_version = "2.6.2" // 2.5.1
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
@@ -95,8 +102,34 @@ dependencies {
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
 
+    // For barcode scanner
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+//    implementation("com.google.dagger:hilt-android:2.45")
+//    implementation("com.google.dagger:hilt-compiler:2.45")
+//    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
     //For BarGraph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version") // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
+
+    // Retrofit dependencies
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.4.0")
 
