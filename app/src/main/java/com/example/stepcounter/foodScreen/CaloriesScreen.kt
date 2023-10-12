@@ -161,7 +161,7 @@ fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(55.dp)
+                .height(40.dp)
         )
         {
             com.example.stepcounter.BottomAppBar(navController)

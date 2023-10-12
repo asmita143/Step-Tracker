@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.MainActivity
@@ -39,8 +38,6 @@ fun InputDataPage(navController: NavHostController, context: Context) {
     var targetSteps by remember { mutableStateOf(TextFieldValue()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-
-
 
     Column(
         modifier = Modifier

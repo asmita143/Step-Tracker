@@ -18,24 +18,33 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.stepcounter.R
+import com.example.stepcounter.database.StepTrackerViewModel
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewMeal(navController: NavHostController) {
+fun AddNewMeal(foodViewModal: StepTrackerViewModel, navController: NavHostController) {
     var name by remember { mutableStateOf("") }
     var mass by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
+    var selectedItem by remember { mutableStateOf("Select an item") }
+    val meal = foodViewModal.getAllMeals().observeAsState(listOf())
+    val mealList = ArrayList<String>()
+
+    for (i in meal.value) {
+        mealList.add(i.name.toString())
+    }
 
     Column {
         Box(
             modifier = Modifier
-                .height(IntrinsicSize.Min)
                 .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier
-
                     .background(Color.White)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Top,
@@ -43,14 +52,15 @@ fun AddNewMeal(navController: NavHostController) {
             ) {
                 Text(
                     text = "New Meal",
-
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 TextField(
                     value = name,
-                    label = { Text(text = "Name") },
-                    onValueChange = { name = it },
+                    label = { Text(text = "Meal Name") },
+                    onValueChange = {
+                        name = it
+                    },
                     keyboardActions = KeyboardActions(
                         onDone = {
                             // Handle the text input submission if needed
@@ -96,7 +106,9 @@ fun AddNewMeal(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
             contentAlignment = Alignment.Center
         ) {
             FloatingActionButton(
@@ -113,9 +125,13 @@ fun AddNewMeal(navController: NavHostController) {
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Box(modifier = Modifier.fillMaxSize().padding(15.dp),
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(15.dp),
 
-            contentAlignment = Alignment.BottomEnd) {
+            contentAlignment = Alignment.BottomEnd
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_camera),
                 contentDescription = "Camera",
@@ -123,9 +139,9 @@ fun AddNewMeal(navController: NavHostController) {
                     .size(48.dp),
                 contentScale = ContentScale.Fit
             )
-
         }
     }
 }
+
 
 
