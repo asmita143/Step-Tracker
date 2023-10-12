@@ -47,6 +47,7 @@ import com.example.stepcounter.R
 fun ManualInput(navController: NavHostController) {
 
     var food by remember { mutableStateOf(TextFieldValue()) }
+    var mass by remember { mutableStateOf(TextFieldValue()) }
     var calories by remember { mutableStateOf(TextFieldValue()) }
     var fat by remember { mutableStateOf(TextFieldValue()) }
     var carbs by remember { mutableStateOf(TextFieldValue()) }
@@ -71,6 +72,10 @@ fun ManualInput(navController: NavHostController) {
                 Text("Add new meal", style = MaterialTheme.typography.titleLarge)
                 InputData(
                     value = food, onValueChange = { food = it }, hint = "Food item",
+                    KeyboardType.Text
+                )
+                InputData(
+                    value = mass, onValueChange = { mass = it }, hint = "Mass",
                     KeyboardType.Number
                 )
                 InputData(
