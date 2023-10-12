@@ -1,6 +1,7 @@
 package com.example.stepcounter.foodScreen
 
 import android.support.v4.os.IResultReceiver._Parcel
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -210,14 +211,12 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
             color = Color.Black
         )
 
-
         Spacer(modifier = Modifier.height(16.dp))
         SmallFloatingActionButton(
-            onClick = { /* Do something when the button in the overlay is clicked */ },
+            onClick = {navController.navigate("MealOfDay") },
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate("MealOfDay")
                 },
         ) {
             Row {

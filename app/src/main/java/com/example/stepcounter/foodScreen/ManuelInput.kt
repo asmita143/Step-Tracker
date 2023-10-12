@@ -1,177 +1,197 @@
 package com.example.stepcounter.foodScreen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.stepcounter.BottomAppBar
 import com.example.stepcounter.R
-import androidx.compose.material3.Text as Text1
 
 @Composable
-fun FoodTrackerUI() {
-    var foodItem by remember { mutableStateOf("") }
-    var caloriesItem by remember { mutableStateOf("") }
-    var fatItem by remember { mutableStateOf("") }
-    var carbohydratesItem by remember { mutableStateOf("") }
-    var sugarcaloriesItem by remember { mutableStateOf("") }
+fun ManualInput(navController: NavHostController) {
 
-    var foodList by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
+    var food by remember { mutableStateOf(TextFieldValue()) }
+    var calories by remember { mutableStateOf(TextFieldValue()) }
+    var fat by remember { mutableStateOf(TextFieldValue()) }
+    var carbs by remember { mutableStateOf(TextFieldValue()) }
+    var sugar by remember { mutableStateOf(TextFieldValue()) }
+    var protein by remember { mutableStateOf(TextFieldValue()) }
+    var salt by remember { mutableStateOf(TextFieldValue()) }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+
     ) {
-        // Title
-        Text1(
-            text = "Add new meal",
-            style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-            color = Color(0xFF000000) // Text color
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Input Fields
-        FoodInput(
-            foodItem = foodItem,
-            caloriesItem = caloriesItem,
-            onFoodItemChange = { foodItem = it },
-            onCaloriesItemChange = { caloriesItem = it },
-            onAddItem = {
-                if (foodItem.isNotBlank() && caloriesItem.isNotBlank()) {
-                    foodList = foodList + Pair(foodItem, caloriesItem)
-                    foodItem = ""
-                    caloriesItem = ""
-                }
+        Spacer(modifier = Modifier.height(50.dp))
+        Box {
+            Column {
+                Text("Add new meal", style = MaterialTheme.typography.titleLarge)
+                InputData(
+                    value = food, onValueChange = { food = it }, hint = "Food item",
+                    KeyboardType.Number
+                )
+                InputData(
+                    value = calories, onValueChange = { calories = it }, hint = "Calories per 100 grams",
+                    KeyboardType.Number
+                )
+                InputData(
+                    value = fat, onValueChange = { fat = it }, hint = "Fat",
+                    KeyboardType.Number
+                )
+                InputData(
+                    value = carbs, onValueChange = { carbs = it }, hint = "Carbohydrates",
+                    KeyboardType.Number
+                )
+                InputData(
+                    value = sugar,
+                    onValueChange = { sugar = it },
+                    hint = "Sugar",
+                    KeyboardType.Number,
+                )
+                InputData(
+                    value = protein,
+                    onValueChange = { sugar = it },
+                    hint = "Protein",
+                    KeyboardType.Number,
+                )
+                InputData(
+                        value = salt,
+                onValueChange = { sugar = it },
+                hint = "Salt",
+                KeyboardType.Number,
+                )
             }
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        }
 
-        // Food List
-        LazyColumn {
-            items(foodList) { (food, calories) ->
-                FoodListItem(food = food, calories = calories)
+        Spacer(modifier = Modifier.weight(1f))
+        Box(
+            modifier = Modifier.height(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            FilledTonalButton(modifier = Modifier
+                .fillMaxWidth(0.7f),
+
+                onClick = {
+
+
+                    // Navigate to the next screen
+                    navController.navigate("InputDataPage")
+                }
+            ) {
+                Text(
+                    "Save and Continue",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Black
+                )
             }
         }
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
+        )
+        {
+            BottomAppBar(navController)
+        }
+        Spacer(modifier = Modifier.weight(1f))
+
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FoodInput(
-    foodItem: String,
-    caloriesItem: String,
-    onFoodItemChange: (String) -> Unit,
-    onCaloriesItemChange: (String) -> Unit,
-    onAddItem: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+fun InputData(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    hint: String,
+    keyboardType: KeyboardType,
+
     ) {
-        TextField(
-            value = foodItem,
-            onValueChange = { onFoodItemChange(it) },
-            textStyle = TextStyle(color = Color(0xFF000000)), // Text color
-            singleLine = true,
-            placeholder = { Text1("Food Item") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    // Handle Done button click here
-                    onAddItem()
-                }
-            ),
-            modifier = Modifier
-                .weight(1f)
-                .background(Color(0xFFCDE5FF)) // Background color
-                .padding(16.dp)
-        )
+    var isClearButtonVisible by remember { mutableStateOf(false) }
+    OutlinedTextField(
+        value = value,
+        onValueChange = {
+            onValueChange(it)
+            isClearButtonVisible = it.text.isNotEmpty()
+        },
+        label = { Text(text = hint, color = Color.Black) },
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        TextField(
-            value = caloriesItem,
-            onValueChange = { onCaloriesItemChange(it) },
-            textStyle = TextStyle(color = Color(0xFF000000)), // Text color
-            singleLine = true,
-            placeholder = { Text1(text = "Calories") },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    // Handle Done button click here
-                    onAddItem()
-                }
-            ),
-            modifier = Modifier
-                .weight(1f)
-                .background(Color(0xFFCDE5FF)) // Background color
-                .padding(16.dp)
-        )
-
-        IconButton(
-            onClick = {
-                // Handle Add button click here
-                onAddItem()
-            },
-            modifier = Modifier.align(Alignment.CenterVertically)
-        ) {
-
-
-        }
-    }
-}
-
-@Composable
-fun FoodListItem(food: String, calories: String) {
-    Card(
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = keyboardType,
+            imeAction = ImeAction.Done
+        ),
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .background(Color(0xFFDCEEF3)), // Background color
+            .padding(vertical = 4.dp)
+            //.background(MaterialTheme.colorScheme.inversePrimary) // Background color
+            .fillMaxWidth(0.7f),
 
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text1(
-                text = food,
-                style = TextStyle(fontWeight = FontWeight.Bold),
-                color = Color(0xFF000000) // Text color
-            )
-            Text1(
-                text = "Calories: $calories",
-                color = Color(0xFF000000) // Text color
-            )
-        }
-    }
-}
 
-@Preview
-@Composable
-fun FoodTrackerUIPreview() {
-    FoodTrackerUI()
+        shape = RoundedCornerShape(5.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color.Black,
+            focusedBorderColor = Color.Gray,// Customize focused outline color
+            unfocusedBorderColor = MaterialTheme.colorScheme.inversePrimary, // Customize unfocused outline color
+        ),
+        trailingIcon = {
+            if (isClearButtonVisible) {
+                IconButton(
+                    onClick = {
+                        onValueChange(TextFieldValue(""))
+                        isClearButtonVisible = false
+                    }
+                ) {
+                    Icon(Icons.Filled.Close, "", tint = Color.Blue)
+                }
+            }
+
+        },
+    )
+
 }

@@ -63,6 +63,7 @@ import com.example.stepcounter.firstScreen.InputDataPage
 import com.example.stepcounter.foodScreen.AddNewMeal
 import com.example.stepcounter.foodScreen.CaloriesPerProduct
 import com.example.stepcounter.foodScreen.CaloriesScreen
+import com.example.stepcounter.foodScreen.ManualInput
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import java.time.DayOfWeek
 import java.time.Instant
@@ -105,8 +106,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
+<<<<<<< HEAD
                             InputDataPage(navController = navController ,this@MainActivity)
                             InputDataPage(navController, this@MainActivity)
+=======
+                            DisplayDataScreen(navController = navController ,this@MainActivity)
+>>>>>>> foodScreen
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
@@ -116,11 +121,15 @@ class MainActivity : ComponentActivity() {
                             CaloriesPerProduct(navController)
                         }
                         composable("InputDataPage") {
-                            DisplayDataScreen(navController,this@MainActivity)
+                            InputDataPage(navController,this@MainActivity)
                         }
                         composable("MealOfDay"){
                             AddNewMeal(foodViewModal, navController)
                         }
+                        composable("ManualInput"){
+                            ManualInput(navController)
+                        }
+
                     }
                     }
                     //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 150))
