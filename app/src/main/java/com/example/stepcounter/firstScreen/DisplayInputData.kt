@@ -85,7 +85,7 @@ fun DisplayDataScreen(navController: NavHostController, context: Context) {
             FilledTonalButton(modifier = Modifier
                 .fillMaxWidth(0.7f),
                 onClick = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate("InputDataPage")
                 }
             ) {
                 Text(text = "Edit")

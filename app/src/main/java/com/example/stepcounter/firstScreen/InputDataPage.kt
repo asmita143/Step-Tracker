@@ -111,7 +111,6 @@ fun InputDataPage(navController: NavHostController, context: Context) {
         }
 
 
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,13 +121,7 @@ fun InputDataPage(navController: NavHostController, context: Context) {
         }
         Spacer(modifier = Modifier.weight(1f))
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp)
-        )
-        {
-            com.example.stepcounter.BottomAppBar(navController)
-        }
+
 
 
     }
