@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 
-@Database(entities = [Step::class, ProductDAO::class], version = 2, exportSchema = false)
+@Database(entities = [Step::class, ProductInfo::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class StepTrackerDB: RoomDatabase() {
     abstract val stepDAO: StepDAO

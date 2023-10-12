@@ -56,12 +56,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
+import com.example.stepcounter.api.ProductApi
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.firstScreen.DisplayDataScreen
 import com.example.stepcounter.firstScreen.InputDataPage
 import com.example.stepcounter.foodScreen.CaloriesPerProduct
 import com.example.stepcounter.foodScreen.CaloriesScreen
 import com.example.stepcounter.ui.theme.StepCounterTheme
+import kotlinx.coroutines.runBlocking
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
@@ -113,6 +115,15 @@ class MainActivity : ComponentActivity() {
                         composable("InputDataPage") {
                             DisplayDataScreen(navController,this@MainActivity)
                         }
+                        runBlocking {
+                            try {
+                                val products = ProductApi.fineliProduct.getProducts()
+                                Log.d("PRODUCTS", products.toString())
+                            } catch (e: Exception) {
+                                Log.d("PRODUCTS", e.toString())
+                            }
+                        }
+                        viewModel.addProductToInternalDb()
                     }
                 }
             }

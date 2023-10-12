@@ -1,17 +1,21 @@
 package com.example.stepcounter.api
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
-@Serializable
+//@Serializable
 data class NutrimentsFineli(
-    @SerialName("carbohydrate, available (g)") val carbohydrate: Double?,
-    @SerialName("energy,calculated (kJ)") val energykJ: Double?,
-    @SerialName("fat, total (g)") val fat: Double?,
-    @SerialName("fatty acids, total saturated (g)") val fatSaturated: Double?,
-    @SerialName("name") val productName: Double?,
-    @SerialName("protein, total (g)") val protein: Double?,
-    @SerialName("salt (mg)") val salt: Double?,
-    @SerialName("sugars, total (g)") val sugars: Double?,
+    @SerializedName("carbohydrate, available (g)") val carbohydrate: String,
+    @SerializedName("energy,calculated (kJ)") val energykJ: String,
+    @SerializedName("fat, total (g)") val fat: String,
+    @SerializedName("name") val productName: String,
+    @SerializedName("protein, total (g)") val protein: String,
+    @SerializedName("salt (mg)") val salt: String,
+    @SerializedName("sugars, total (g)") val sugars: String,
 )
+
+//data class NutrimentsFineli(
+//    val name: String?,
+//)

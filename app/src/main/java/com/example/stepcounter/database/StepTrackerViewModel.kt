@@ -4,13 +4,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.stepcounter.api.WebServiceRepository
 import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
 import java.sql.Date
+import kotlin.math.roundToInt
 
 class StepTrackerViewModel(application: Application) : AndroidViewModel(application) {
     private val db = StepTrackerDB.getInstance(application)
+    private val repository: WebServiceRepository = WebServiceRepository()
 
     fun getAllSteps(): LiveData<List<Step>> {
         return db.stepDAO.getAllSteps()
@@ -40,5 +43,30 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
 
     fun getProductsByName(productName: String): LiveData<List<ProductInfo>> {
         return db.productDAO.getProductsByName(productName)
+    }
+
+    fun addProducts(productInfo: ProductInfo) {
+        viewModelScope.launch {
+            db.productDAO.addProduct(productInfo)
+        }
+    }
+
+    fun addProductToInternalDb() {
+        viewModelScope.launch {
+            val response = repository.getFineliList()
+
+            response.forEach {
+                db.productDAO.addProduct(ProductInfo(
+                    barcode = "NO BARCODE",
+                    calories = it.energykJ.toDouble().div(4.184).roundToInt(),
+                    carbohydrate = it.carbohydrate.toDoubleOrNull() ?: 0.00,
+                    fat = it.fat.toDoubleOrNull() ?: 0.00,
+                    sugars = it.sugars.toDoubleOrNull() ?: 0.00,
+                    protein = it.protein.toDoubleOrNull() ?: 0.00,
+                    salt = it.salt.toDoubleOrNull() ?: 0.00,
+                    productName = it.productName
+                ))
+            }
+        }
     }
 }
