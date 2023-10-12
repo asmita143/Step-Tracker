@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
 import java.sql.Date
@@ -27,5 +28,17 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             db.stepDAO.addSteps(step)
         }
+    }
+
+    fun getAllProducts(): LiveData<List<ProductInfo>> {
+        return db.productDAO.getAllProducts()
+    }
+
+    fun getProductsByBarcode(barcode: String): LiveData<ProductInfo> {
+        return db.productDAO.getScannedProductByBarcode(barcode)
+    }
+
+    fun getProductsByName(productName: String): LiveData<List<ProductInfo>> {
+        return db.productDAO.getProductsByName(productName)
     }
 }

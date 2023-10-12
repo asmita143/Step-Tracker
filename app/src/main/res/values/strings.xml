@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Step counter</string>
+    <string name="product_scan_success">Product scan successful</string>
+    <string name="product_scan_error">Product not found! Please enter information manually!</string>
 </resources>

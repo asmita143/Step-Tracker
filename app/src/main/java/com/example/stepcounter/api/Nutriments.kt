@@ -8,16 +8,17 @@ import java.lang.Exception
 @Serializable
 data class Nutriments(
     @SerialName("carbohydrates") val carbohydrates: StringDouble = StringDouble(),
-    @SerialName("carbohydrates_serving") val carbohydrates_serving: StringDouble = StringDouble(),
-    @SerialName("energy-kcal_serving") val calories: StringDouble = StringDouble(),
+//    @SerialName("carbohydrates_serving") val carbohydrates_serving: StringDouble = StringDouble(),
+    @SerialName("energy-kcal") val calories: StringDouble = StringDouble(),
     @SerialName("fat") val fat: StringDouble = StringDouble(),
-    @SerialName("fat_serving") val fat_serving: StringDouble = StringDouble(),
+    @SerialName("saturated-fat") val saturatedFat: StringDouble = StringDouble(),
+//    @SerialName("fat_serving") val fat_serving: StringDouble = StringDouble(),
     @SerialName("proteins") val proteins: StringDouble = StringDouble(),
-    @SerialName("proteins_serving") val proteins_serving: StringDouble = StringDouble(),
+//    @SerialName("proteins_serving") val proteins_serving: StringDouble = StringDouble(),
     @SerialName("sugars") val sugars: StringDouble = StringDouble(),
-    @SerialName("sugars_serving") val sugars_serving: StringDouble = StringDouble(),
+//    @SerialName("sugars_serving") val sugars_serving: StringDouble = StringDouble(),
     @SerialName("salt") val salt: StringDouble = StringDouble(),
-    @SerialName("salt_serving") val salt_serving: StringDouble = StringDouble()
+//    @SerialName("salt_serving") val salt_serving: StringDouble = StringDouble()
 )
 
 @Serializable

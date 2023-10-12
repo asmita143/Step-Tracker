@@ -6,7 +6,6 @@ plugins {
     id("com.google.devtools.ksp")
 //    id("org.jetbrains.kotlin.kapt")
 //    kotlin("kapt")
-//    id("com.google.dagger.hilt.android") version "2.45" apply false
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 

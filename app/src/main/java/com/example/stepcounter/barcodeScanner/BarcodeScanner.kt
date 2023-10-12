@@ -2,10 +2,12 @@ package com.example.stepcounter.barcodeScanner
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import com.example.stepcounter.App
 import com.example.stepcounter.App.Companion.appContext
+import com.example.stepcounter.R
 import com.example.stepcounter.api.BarcodeProductApi
 import com.example.stepcounter.constants.SCANNER_TAG
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -57,8 +59,10 @@ class BarcodeScanner {
                             barCode = result.toString(),
                             fields = "product_name,nutriments"
                         )
+                        Toast.makeText(appContext, R.string.product_scan_success, Toast.LENGTH_SHORT).show()
                         Log.d("PRDCT", productInfo.toString())
                     } catch (e: Exception) {
+                        Toast.makeText(appContext, R.string.product_scan_error, Toast.LENGTH_SHORT).show()
                         Log.d("PRDCT", "No product found")
                     }
 
