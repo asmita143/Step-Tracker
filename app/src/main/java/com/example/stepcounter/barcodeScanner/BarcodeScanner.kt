@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.stepcounter.App
 import com.example.stepcounter.App.Companion.appContext
 import com.example.stepcounter.R
-import com.example.stepcounter.api.BarcodeProductApi
+import com.example.stepcounter.api.ProductApi
 import com.example.stepcounter.constants.SCANNER_TAG
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
@@ -55,7 +55,7 @@ class BarcodeScanner {
                 Log.d(SCANNER_TAG, "initial value: $result")
                 runBlocking {
                     try {
-                        val productInfo = BarcodeProductApi.service.getInfoByBarCode(
+                        val productInfo = ProductApi.barcodeProduct.getInfoByBarCode(
                             barCode = result.toString(),
                             fields = "product_name,nutriments"
                         )
