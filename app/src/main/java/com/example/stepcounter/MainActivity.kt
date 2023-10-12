@@ -62,7 +62,7 @@ import com.example.stepcounter.firstScreen.InputDataPage
 import com.example.stepcounter.foodScreen.AddNewMeal
 import com.example.stepcounter.foodScreen.CaloriesPerProduct
 import com.example.stepcounter.foodScreen.CaloriesScreen
-import com.example.stepcounter.foodScreen.FoodTrackerUI
+import com.example.stepcounter.foodScreen.ManualInput
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import java.time.DayOfWeek
 import java.time.Instant
@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
                             AddNewMeal(navController)
                         }
                         composable("ManualInput"){
-                            FoodTrackerUI(navController)
+                            ManualInput(navController)
                         }
 
                     }
