@@ -76,11 +76,6 @@ fun AddNewMeal(navController: NavHostController) {
                     value = mass,
                     label = { Text("Text") },
                     onValueChange = { mass = it },
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            // Handle the text input submission if needed
-                        }
-                    ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done

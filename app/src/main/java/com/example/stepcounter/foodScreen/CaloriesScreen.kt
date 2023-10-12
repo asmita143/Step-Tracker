@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,8 +55,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -171,6 +174,7 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(5))
             .background(Color.White)
             .padding(16.dp)
     ) {
@@ -205,16 +209,13 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
             fontSize = 16.sp,
             color = Color.Black
         )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
+
 
         Spacer(modifier = Modifier.height(16.dp))
         SmallFloatingActionButton(
             onClick = { /* Do something when the button in the overlay is clicked */ },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .clickable {
                     navController.navigate("MealOfDay")
                 },
@@ -258,15 +259,20 @@ fun EatenTodayOverlay(onCloseClick: () -> Unit, navController: NavHostController
                         },
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Column() {
+                    Row(Modifier.padding(5.dp)) {
                         Text(
-                            text = "Orang fdsfsdfsfdsfsdfsf dasdasdasdadsadassfddssdfsdfe",
+                            text = "Orange",
                             style = Typography.labelSmall
                         )
-                        Text(
-                            text = "Time:10:00",
-                            modifier = Modifier.padding(8.dp)
+                        Spacer(modifier = Modifier.width(60.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.clock), // Replace with your image resource
+                            contentDescription = "time",
+                            modifier = Modifier
+                                .size(15.dp),
+                            contentScale = ContentScale.Fit
                         )
+                        Text(text = "10:10pm", style = Typography.labelSmall)
                     }
                 }
             }

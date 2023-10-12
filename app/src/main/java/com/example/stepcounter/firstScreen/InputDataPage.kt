@@ -22,6 +22,7 @@ import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -70,13 +71,14 @@ fun InputDataPage(navController: NavHostController, context: Context) {
         Box {
             Column {
                 Text("Input User Data", style = MaterialTheme.typography.labelLarge)
-                InputData(value = name, onValueChange = { name = it }, hint = "Name")
-                InputData(value = height, onValueChange = { height = it }, hint = "Height")
-                InputData(value = weight, onValueChange = { weight = it }, hint = "Weight")
+                InputData(value = name, onValueChange = { name = it },hint = "Name",KeyboardType.Text)
+                InputData(value = height, onValueChange = { height = it }, hint = "Height",KeyboardType.Number)
+                InputData(value = weight, onValueChange = { weight = it }, hint = "Weight",KeyboardType.Number)
                 InputData(
                     value = targetSteps,
                     onValueChange = { targetSteps = it },
-                    hint = "Target Steps"
+                    hint = "Target Steps",
+                    KeyboardType.Number,
                 )
             }
 
@@ -137,7 +139,9 @@ fun InputDataPage(navController: NavHostController, context: Context) {
 fun InputData(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
-    hint: String
+    hint: String,
+    keyboardType:KeyboardType,
+
 ) {
     var isClearButtonVisible by remember { mutableStateOf(false) }
     OutlinedTextField(
@@ -149,6 +153,7 @@ fun InputData(
         label = { Text(text = hint, color = Color.Black) },
 
         keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = keyboardType,
             imeAction = ImeAction.Done
         ),
         modifier = Modifier
