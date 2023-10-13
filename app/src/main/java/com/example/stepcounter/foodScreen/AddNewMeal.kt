@@ -1,8 +1,12 @@
 package com.example.stepcounter.foodScreen
 
+import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -11,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,14 +28,33 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.stepcounter.App
 import com.example.stepcounter.R
+import com.example.stepcounter.api.Product
+import com.example.stepcounter.api.ProductApi
+import com.example.stepcounter.barcodeScanner.BarcodeScanner
+import com.example.stepcounter.barcodeScanner.BarcodeViewModel
+import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.ui.theme.Typography
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.Dispatcher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewMeal(navController: NavHostController) {
+fun AddNewMeal(navController: NavHostController,
+               onScanBarcode: suspend () -> Unit,
+               barcodeValue: String?) {
     var name by remember { mutableStateOf("") }
     var mass by remember { mutableStateOf("") }
+//    val barcodeResult = viewModel.liveData.observeAsState()
+//    val barcode by viewModel.liveData.observeAsState(null)
+//    barcodeResult?.let { Log.d("LIVE DATA in add new", it.toString()) }
+//    barcode?.let { Log.d("LIVE DATA in add new", it) }
+    val scope = rememberCoroutineScope()
+
 
     Column(
         modifier = Modifier
@@ -61,7 +85,10 @@ fun AddNewMeal(navController: NavHostController) {
                         painter = painterResource(id = R.drawable.ic_camera),
                         contentDescription = "Camera for scanning items",
                         modifier = Modifier
-                            .size(30.dp),
+                            .size(30.dp)
+                            .clickable {
+                                scope.launch { onScanBarcode() }
+                            },
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -121,6 +148,10 @@ fun AddNewMeal(navController: NavHostController) {
                         .padding(5.dp)
                 )
 
+                if (barcodeValue != null) {
+                    Text(text = barcodeValue)
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -175,9 +206,69 @@ fun AddNewMeal(navController: NavHostController) {
     }
 }
 
+@Composable
+fun DisplayData(viewModel: BarcodeViewModel = BarcodeViewModel()) {
+    val data by viewModel.liveData.observeAsState()
+    data?.let { Log.d("LIVE DATA in display", it) }
 
+    Column {
+        Text(text = "Data from LiveData: $data")
+    }
+}
 
+@Composable
+fun CheckTheProductDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+) {
+    AlertDialog(
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Text(text = dialogText)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Dismiss")
+            }
+        }
+    )
+}
 
+@Composable
+fun ChecktTheProduct(product: Product) {
+    val openAlertDialog = remember { mutableStateOf(false) }
 
-
-
+    when {
+        openAlertDialog.value -> {
+            CheckTheProductDialog(
+                onDismissRequest = { openAlertDialog.value = false },
+                onConfirmation = {
+                    openAlertDialog.value = false
+                    println("Product added")
+                },
+                dialogTitle = "Is it correct?",
+                dialogText = "Are you looking for: ${product.productName}"
+            )
+        }
+    }
+}

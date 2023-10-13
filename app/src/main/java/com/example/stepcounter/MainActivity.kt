@@ -1,6 +1,7 @@
 package com.example.stepcounter
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -50,12 +51,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
+import com.example.stepcounter.barcodeScanner.BarcodeScanner
+import com.example.stepcounter.barcodeScanner.BarcodeViewModel
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.firstScreen.DisplayDataScreen
 import com.example.stepcounter.firstScreen.InputDataPage
@@ -73,14 +77,15 @@ import kotlin.math.sqrt
 class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
     private val viewModel: StepTrackerViewModel by viewModels()
-    private val foodViewModal: StepTrackerViewModel by viewModels()
-
+    private val foodViewModel: StepTrackerViewModel by viewModels()
+    private val barcodeViewModel: BarcodeViewModel = BarcodeViewModel()
 
     @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadData()
         setContent {
+            val barcode by barcodeViewModel.liveData.observeAsState(null)
             val navController = rememberNavController()
             val currentTimeMillis  = System.currentTimeMillis()
             val instant = Instant.ofEpochMilli(currentTimeMillis)
@@ -90,7 +95,7 @@ class MainActivity : ComponentActivity() {
             val currentDate = instant.atZone(zoneId).toLocalDate()
             val dayOfWeek = currentDate.dayOfWeek
 
-            foodViewModal.addProductToInternalDb()
+            foodViewModel.addProductToInternalDb()
 
             StepCounterTheme {
                 Surface(
@@ -109,7 +114,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController, currentDate, foodViewModal)
+                           CaloriesScreen(navController, currentDate, foodViewModel)
                         }
                         composable("CaloriesPerProduct") {
                             CaloriesPerProduct(navController)
@@ -118,7 +123,10 @@ class MainActivity : ComponentActivity() {
                             InputDataPage(navController,this@MainActivity)
                         }
                         composable("MealOfDay"){
-                            AddNewMeal(navController)
+                            AddNewMeal(navController,
+                                { BarcodeScanner().startScanning() },
+                                barcode
+                                )
                         }
                         composable("ManualInput"){
                             ManualInput(navController)

@@ -3,6 +3,7 @@ package com.example.stepcounter.database
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.stepcounter.api.WebServiceRepository
 import com.example.stepcounter.database.entities.Meal
