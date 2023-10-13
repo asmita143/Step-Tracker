@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.stepcounter.database.entities.Meal
-import com.example.stepcounter.database.entities.ProductInfo
 import java.sql.Date
+
 
 @Dao
 interface MealDAO {
@@ -15,5 +15,5 @@ interface MealDAO {
     suspend fun addMeal(meal: Meal)
 
     @Query("SELECT * FROM meal WHERE date = :date")
-    fun getMealsByDate(date: Date): LiveData<List<Meal>>
+    fun getMealsByDate(date: Date) : LiveData<List<Meal>>
 }

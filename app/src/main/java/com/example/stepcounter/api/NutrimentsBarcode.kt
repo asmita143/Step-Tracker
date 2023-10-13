@@ -1,7 +1,6 @@
 package com.example.stepcounter.api
 
 import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.lang.Exception
 

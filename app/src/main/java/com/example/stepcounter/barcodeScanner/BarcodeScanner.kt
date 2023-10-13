@@ -1,17 +1,12 @@
 package com.example.stepcounter.barcodeScanner
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
-import com.example.stepcounter.App
 import com.example.stepcounter.App.Companion.appContext
 import com.example.stepcounter.R
 import com.example.stepcounter.api.ProductApi
-import com.example.stepcounter.constants.SCANNER_TAG
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,13 +47,14 @@ class BarcodeScanner {
             .addOnSuccessListener { barcode ->
                 // Task completed successfully
                 val result = barcode.rawValue
-                Log.d(SCANNER_TAG, "initial value: $result")
+                Log.d("SCANNER", "initial value: $result")
                 runBlocking {
                     try {
                         val productInfo = ProductApi.barcodeProduct.getInfoByBarCode(
                             barCode = result.toString(),
                             fields = "product_name,nutriments"
                         )
+
                         Toast.makeText(appContext, R.string.product_scan_success, Toast.LENGTH_SHORT).show()
                         Log.d("PRDCT", productInfo.toString())
                     } catch (e: Exception) {
@@ -70,16 +66,16 @@ class BarcodeScanner {
 
                 when (barcode.valueType) {
                     Barcode.TYPE_URL -> {
-                        Log.d(SCANNER_TAG, "initiateScanner: ${barcode.valueType}")
+                        Log.d("SCANNER", "initiateScanner: ${barcode.valueType}")
                     }
 
                     else -> {
-                        Log.d(SCANNER_TAG, "initiateScanner: ${barcode.valueType}")
+                        Log.d("SCANNER", "initiateScanner: ${barcode.valueType}")
                     }
                 }
 
-                Log.d(SCANNER_TAG, "initiateScanner: Display value ${barcode.displayValue}")
-                Log.d(SCANNER_TAG, "initiateScanner: Display value ${barcode.format}")
+                Log.d("SCANNER", "initiateScanner: Display value ${barcode.displayValue}")
+                Log.d("SCANNER", "initiateScanner: Display value ${barcode.format}")
                 barCodeResult.value = barcode.displayValue
                 barCodeResult.value?.let { Log.d("wtf", it) }
             }
@@ -87,7 +83,7 @@ class BarcodeScanner {
                 // Task canceled
             }
             .addOnFailureListener { e ->
-                Log.d(SCANNER_TAG, "Failed to scan")
+                Log.d("SCANNER", "Failed to scan")
             }
     }
 }

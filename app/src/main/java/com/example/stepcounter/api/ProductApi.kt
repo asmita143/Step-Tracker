@@ -1,13 +1,5 @@
 package com.example.stepcounter.api
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -50,7 +42,7 @@ object ProductApi {
     }
 }
 
-class WebServiceRepository() {
+class WebServiceRepository {
     private val call = ProductApi.fineliProduct
     suspend fun getFineliList() = call.getProducts()
 }

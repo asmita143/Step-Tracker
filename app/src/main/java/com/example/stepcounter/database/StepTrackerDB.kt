@@ -9,7 +9,7 @@ import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 
-@Database(entities = [Step::class, ProductInfo::class, Meal::class], version = 2 , exportSchema = false)
+@Database(entities = [Step::class, ProductInfo::class, Meal::class], version = 1 , exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class StepTrackerDB: RoomDatabase() {
     abstract val stepDAO: StepDAO
