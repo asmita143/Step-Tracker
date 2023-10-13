@@ -13,6 +13,7 @@ import com.example.stepcounter.database.entities.Step
 abstract class StepTrackerDB: RoomDatabase() {
     abstract val stepDAO: StepDAO
     abstract val productDAO: ProductDAO
+    abstract val mealDAO: MealDAO
     companion object {
         @Volatile
         private var INSTANCE: StepTrackerDB? = null

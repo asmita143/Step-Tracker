@@ -115,15 +115,17 @@ class MainActivity : ComponentActivity() {
                         composable("InputDataPage") {
                             DisplayDataScreen(navController,this@MainActivity)
                         }
-                        runBlocking {
-                            try {
-                                val products = ProductApi.fineliProduct.getProducts()
-                                Log.d("PRODUCTS", products.toString())
-                            } catch (e: Exception) {
-                                Log.d("PRODUCTS", e.toString())
-                            }
-                        }
-                        viewModel.addProductToInternalDb()
+
+//                        runBlocking {
+//                            try {
+//                                val products = ProductApi.fineliProduct.getProducts()
+//                                Log.d("PRODUCTS", products.toString())
+//                            } catch (e: Exception) {
+//                                Log.d("PRODUCTS", e.toString())
+//                            }
+//                        }
+
+//                        viewModel.addProductToInternalDb()
                     }
                 }
             }

@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.stepcounter.api.WebServiceRepository
+import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
@@ -67,6 +68,18 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
                     productName = it.productName
                 ))
             }
+        }
+    }
+
+    fun addMeal(meal: Meal) {
+        viewModelScope.launch {
+            db.mealDAO.addMeal(meal)
+        }
+    }
+
+    fun getMealsByDate(date: Date) {
+        viewModelScope.launch{
+            db.mealDAO.getMealsByDate(date)
         }
     }
 }
