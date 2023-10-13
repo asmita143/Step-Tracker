@@ -1,32 +1,26 @@
 package com.example.stepcounter.foodScreen
 
-import android.support.v4.os.IResultReceiver._Parcel
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -45,33 +39,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.R
+import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.ui.theme.Typography
-import com.example.stepcounter.ui.theme.md_theme_light_background
-import com.example.stepcounter.ui.theme.md_theme_light_tertiary
 import java.time.LocalDate
 
 @Composable
-fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
+fun CaloriesScreen(
+    navController: NavHostController,
+    currentDate: LocalDate,
+    foodViewModal: StepTrackerViewModel
+) {
     var isOverlayVisible by remember { mutableStateOf(false) }
     var isEatenTodayOverlayVisible by remember { mutableStateOf(false) }
+
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -122,7 +110,7 @@ fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
                     )
                 ) {
                     MoreInfoOverlay(
-                        onCloseClick = { isOverlayVisible = false }
+                        onCloseClick = { isOverlayVisible = false },navController
                     )
                 }
 
@@ -157,7 +145,7 @@ fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(55.dp)
+                .height(40.dp)
         )
         {
             com.example.stepcounter.BottomAppBar(navController)
@@ -166,66 +154,67 @@ fun CaloriesScreen(navController: NavHostController, currentDate: LocalDate) {
 }
 
 @Composable
-fun MoreInfoOverlay(onCloseClick: () -> Unit) {
+fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
+    var scrollState by remember { mutableStateOf(ScrollState(0)) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(5))
             .background(Color.White)
             .padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
-        Text(
-            text = "Total calories:1500",
-            fontSize = 20.sp,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Fat:20%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Carbohydrate:20%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Text(
-            text = "Sugar:10%",
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        SmallFloatingActionButton(
-            onClick = { /* Do something when the button in the overlay is clicked */ },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row {
-                Text("Add new entries")
-                Spacer(modifier = Modifier.width(10.dp))
-                Icon(Icons.Filled.Add, "Small floating action button.")
-            }
+        repeat(1) {
+            Text(
+                text = "Total calories:1500",
+                style = Typography.labelLarge,
+                color = Color.Black
+            )
+            Text(
+                text = "Fat:20%",
+                style = Typography.labelSmall,
+                color = Color.Black
+            )
+            Text(
+                text = "Carbohydrate:20%",
+                style = Typography.labelSmall,
+                color = Color.Black
+            )
+            Text(
+                text = "Sugar:10%",
+                style = Typography.labelSmall,
+                color = Color.Black
+            )
+            Text(
+                text = "Protein:10%",
+                style = Typography.labelSmall,
+                color = Color.Black
+            )
+            Text(
+                text = "Salt:10%",
+                style = Typography.labelSmall,
+                color = Color.Black
+            )
 
+            SmallFloatingActionButton(
+                onClick = { navController.navigate("MealOfDay") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                    },
+            ) {
+                Row {
+                    Text("Add new entries")
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Icon(
+                        Icons.Filled.Add,
+                        "Small floating action button.",
+                    )
+                }
+            }
         }
+
     }
 }
 
@@ -255,15 +244,20 @@ fun EatenTodayOverlay(onCloseClick: () -> Unit, navController: NavHostController
                         },
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Column() {
+                    Row(Modifier.padding(5.dp)) {
                         Text(
-                            text = "Orang fdsfsdfsfdsfsdfsf dasdasdasdadsadassfddssdfsdfe",
+                            text = "Orange",
                             style = Typography.labelSmall
                         )
-                        Text(
-                            text = "Time:10:00",
-                            modifier = Modifier.padding(8.dp)
+                        Spacer(modifier = Modifier.width(60.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.clock), // Replace with your image resource
+                            contentDescription = "time",
+                            modifier = Modifier
+                                .size(15.dp),
+                            contentScale = ContentScale.Fit
                         )
+                        Text(text = "10:10pm", style = Typography.labelSmall)
                     }
                 }
             }

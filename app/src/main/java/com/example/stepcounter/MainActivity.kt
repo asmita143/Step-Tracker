@@ -60,8 +60,10 @@ import com.example.stepcounter.api.ProductApi
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.firstScreen.DisplayDataScreen
 import com.example.stepcounter.firstScreen.InputDataPage
+import com.example.stepcounter.foodScreen.AddNewMeal
 import com.example.stepcounter.foodScreen.CaloriesPerProduct
 import com.example.stepcounter.foodScreen.CaloriesScreen
+import com.example.stepcounter.foodScreen.ManualInput
 import com.example.stepcounter.ui.theme.StepCounterTheme
 import kotlinx.coroutines.runBlocking
 import java.time.DayOfWeek
@@ -70,12 +72,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.sqrt
 
-
 class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
     private val viewModel: StepTrackerViewModel by viewModels()
+    private val foodViewModal: StepTrackerViewModel by viewModels()
 
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadData()
@@ -89,7 +92,8 @@ class MainActivity : ComponentActivity() {
             val currentDate = instant.atZone(zoneId).toLocalDate()
             val dayOfWeek = currentDate.dayOfWeek
 
-            Log.d("MSGtime" , "$formattedTime $dayOfWeek")
+            foodViewModal.fetchAndSaveItems()
+
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -98,22 +102,28 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = Screen.Home.route) {
                         composable(route = Screen.Home.route) {
-                            // Create and display the content for the Home screen
+                            //Create and display the content for the Home screen
                             Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
-                            InputDataPage(navController = navController ,this@MainActivity)
+                            DisplayDataScreen(navController = navController ,this@MainActivity)
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController, currentDate)
+                           CaloriesScreen(navController, currentDate, foodViewModal)
                         }
                         composable("CaloriesPerProduct") {
                             CaloriesPerProduct(navController)
                         }
                         composable("InputDataPage") {
-                            DisplayDataScreen(navController,this@MainActivity)
+                            InputDataPage(navController,this@MainActivity)
+                        }
+                        composable("MealOfDay"){
+                            AddNewMeal(navController)
+                        }
+                        composable("ManualInput"){
+                            ManualInput(navController)
                         }
 
 //                        runBlocking {
@@ -127,11 +137,12 @@ class MainActivity : ComponentActivity() {
 
 //                        viewModel.addProductToInternalDb()
                     }
+                    }
+                    //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 150))
                 }
             }
+            stepCounter.initialize(this)
         }
-        stepCounter.initialize(this)
-    }
 
     override fun onResume() {
         super.onResume()
@@ -155,7 +166,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loadData() {
-
         // In this function we will retrieve data
         val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
         Log.d("MSGLoad" , sharedPreferences.getFloat("key1", 0f).toString())
@@ -169,6 +179,7 @@ class StepCounter: SensorEventListener {
     private var accelerometer: Sensor? = null
     private var magnitudePreviousStep = 0f
     private var totalSteps : MutableState<Float> = mutableFloatStateOf(0f)
+    private var previousTotalSteps : MutableState<Float> = mutableFloatStateOf(0f)
 
     fun initialize(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -193,7 +204,6 @@ class StepCounter: SensorEventListener {
             if(magnitudeDelta > 6) {
                 totalSteps.value++
             }
-
         }
     }
 
@@ -202,6 +212,7 @@ class StepCounter: SensorEventListener {
     }
 
     fun stopListening() {
+        previousTotalSteps = totalSteps
         sensorManager?.unregisterListener(this)
     }
 
@@ -215,6 +226,7 @@ class StepCounter: SensorEventListener {
     }
 
 }
+
 
 @Composable
 fun Home(

@@ -86,7 +86,7 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-    // optional - RxJava2 support for Room
+    /// optional - RxJava2 support for Room
     implementation("androidx.room:room-rxjava2:$room_version")
 
     // optional - RxJava3 support for Room
@@ -140,6 +140,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
 
+    //implementation("androidx.work:work-runtime:2.7.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.work:work-runtime:2.7.0")
 
     implementation("androidx.work:work-runtime-ktx:2.7.1")
