@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.stepcounter.App.Companion.appContext
 import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
@@ -18,11 +19,11 @@ abstract class StepTrackerDB: RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: StepTrackerDB? = null
-        fun getInstance(context: Context): StepTrackerDB {
+        fun getInstance(): StepTrackerDB {
             synchronized(this) {
                 var instance = INSTANCE
                 if(instance == null) {
-                    instance = Room.databaseBuilder(context,
+                    instance = Room.databaseBuilder(appContext,
                         StepTrackerDB::class.java, "recipe_db")
                         .fallbackToDestructiveMigration().build()
                     INSTANCE = instance

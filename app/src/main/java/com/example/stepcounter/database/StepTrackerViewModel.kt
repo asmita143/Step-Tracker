@@ -14,8 +14,7 @@ import java.sql.Date
 import kotlin.math.roundToInt
 
 class StepTrackerViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = StepTrackerDB.getInstance(application)
-    private val repository: WebServiceRepository = WebServiceRepository()
+    private val db = StepTrackerDB.getInstance()
 
     fun getAllSteps(): LiveData<List<Step>> {
         return db.stepDAO.getAllSteps()
@@ -53,34 +52,15 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun addProductToInternalDb() {
-        viewModelScope.launch {
-            val response = repository.getFineliList()
-
-            response.forEach {
-                db.productDAO.addProduct(ProductInfo(
-                    barcode = "NO BARCODE",
-                    calories = it.energykJ.toDouble().div(4.184).roundToInt(),
-                    carbohydrate = it.carbohydrate.toDoubleOrNull() ?: 0.00,
-                    fat = it.fat.toDoubleOrNull() ?: 0.00,
-                    sugars = it.sugars.toDoubleOrNull() ?: 0.00,
-                    protein = it.protein.toDoubleOrNull() ?: 0.00,
-                    salt = it.salt.toDoubleOrNull() ?: 0.00,
-                    productName = it.productName
-                ))
-            }
-        }
-    }
-
     fun addMeal(meal: Meal) {
         viewModelScope.launch {
             db.mealDAO.addMeal(meal)
         }
     }
 
-    fun getMealsByDate(date: Date) {
-        viewModelScope.launch{
-            db.mealDAO.getMealsByDate(date)
-        }
-    }
+//    fun getMealsByDate(date: Date) {
+//        viewModelScope.launch{
+//            db.mealDAO.getMealsByDate(date)
+//        }
+//    }
 }

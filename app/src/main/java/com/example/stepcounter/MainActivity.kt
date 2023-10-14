@@ -95,8 +95,6 @@ class MainActivity : ComponentActivity() {
             val currentDate = instant.atZone(zoneId).toLocalDate()
             val dayOfWeek = currentDate.dayOfWeek
 
-            foodViewModel.addProductToInternalDb()
-
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -125,7 +123,8 @@ class MainActivity : ComponentActivity() {
                         composable("MealOfDay"){
                             AddNewMeal(navController,
                                 { BarcodeScanner().startScanning() },
-                                barcode
+                                barcode,
+                                foodViewModel
                                 )
                         }
                         composable("ManualInput"){

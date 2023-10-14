@@ -14,6 +14,6 @@ interface MealDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addMeal(meal: Meal)
 
-    @Query("SELECT * FROM meal WHERE date = :date")
-    fun getMealsByDate(date: Date) : LiveData<List<Meal>>
+//    @Query("SELECT * FROM meal WHERE date = :date")
+//    fun getMealsByDate(date: Date) : LiveData<List<Meal>>
 }

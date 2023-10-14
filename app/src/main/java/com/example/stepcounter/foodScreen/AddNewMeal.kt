@@ -46,7 +46,8 @@ import okhttp3.Dispatcher
 @Composable
 fun AddNewMeal(navController: NavHostController,
                onScanBarcode: suspend () -> Unit,
-               barcodeValue: String?) {
+               barcodeValue: String?,
+               stepTrackerViewModel: StepTrackerViewModel) {
     var name by remember { mutableStateOf("") }
     var mass by remember { mutableStateOf("") }
 //    val barcodeResult = viewModel.liveData.observeAsState()
@@ -102,8 +103,23 @@ fun AddNewMeal(navController: NavHostController,
             Column() {
                 OutlinedTextField(
                     value = name,
-                    label = { Text(text = "Food Item", color = Color.Black) },
+                    singleLine = true,
                     onValueChange = { name = it },
+                    trailingIcon = {
+                          Image(
+                              painter = painterResource(id = R.drawable.baseline_search_24),
+                              contentDescription = "Search for a product",
+                              modifier = Modifier
+                                  .clickable {
+                                      val list = stepTrackerViewModel.getProductsByName(name)
+                                      Log.d("Search", list.value.toString())
+                                      Log.d("Search", name)
+                                      Log.d("Search hardcode", stepTrackerViewModel.getProductsByName("Breakfast Cereal, Wheat Flakes, Nuts, Almond, Nut Flakers, Lidl").value.toString())
+                                  },
+                              )
+
+                    },
+                    label = { Text(text = "Food Item", color = Color.Black) },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
@@ -147,10 +163,6 @@ fun AddNewMeal(navController: NavHostController,
                         )
                         .padding(5.dp)
                 )
-
-                if (barcodeValue != null) {
-                    Text(text = barcodeValue)
-                }
 
                 Box(
                     modifier = Modifier

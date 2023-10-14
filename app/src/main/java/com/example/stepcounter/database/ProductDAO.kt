@@ -18,6 +18,6 @@ interface ProductDAO {
     @Query("SELECT * FROM productInfo")
     fun getAllProducts(): LiveData<List<ProductInfo>>
 
-    @Query("SELECT * FROM productInfo where productName LIKE '%' || :productName || '%'")
+    @Query("SELECT * FROM productInfo WHERE productName = :productName")
     fun getProductsByName(productName: String): LiveData<List<ProductInfo>>
 }
