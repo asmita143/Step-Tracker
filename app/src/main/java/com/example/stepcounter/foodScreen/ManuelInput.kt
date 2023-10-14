@@ -1,12 +1,9 @@
 package com.example.stepcounter.foodScreen
 
-import android.content.Context
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,17 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.BottomAppBar
-import com.example.stepcounter.R
 
 @Composable
 fun ManualInput(navController: NavHostController) {
@@ -56,8 +49,6 @@ fun ManualInput(navController: NavHostController) {
     var salt by remember { mutableStateOf(TextFieldValue()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-
-
 
     Column(
         modifier = Modifier
@@ -135,7 +126,6 @@ fun ManualInput(navController: NavHostController) {
             }
         }
 
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -144,8 +134,8 @@ fun ManualInput(navController: NavHostController) {
         {
             BottomAppBar(navController)
         }
-        Spacer(modifier = Modifier.weight(1f))
 
+        Spacer(modifier = Modifier.weight(1f))
 
     }
 }
@@ -157,7 +147,6 @@ fun InputData(
     onValueChange: (TextFieldValue) -> Unit,
     hint: String,
     keyboardType: KeyboardType,
-
     ) {
     var isClearButtonVisible by remember { mutableStateOf(false) }
     OutlinedTextField(
@@ -177,13 +166,14 @@ fun InputData(
             //.background(MaterialTheme.colorScheme.inversePrimary) // Background color
             .fillMaxWidth(0.7f),
 
-
         shape = RoundedCornerShape(5.dp),
+
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = Color.Black,
             focusedBorderColor = Color.Gray,// Customize focused outline color
             unfocusedBorderColor = MaterialTheme.colorScheme.inversePrimary, // Customize unfocused outline color
         ),
+
         trailingIcon = {
             if (isClearButtonVisible) {
                 IconButton(
@@ -195,8 +185,6 @@ fun InputData(
                     Icon(Icons.Filled.Close, "", tint = Color.Blue)
                 }
             }
-
         },
     )
-
 }

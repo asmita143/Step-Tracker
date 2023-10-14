@@ -57,6 +57,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
 import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.Step
 import com.example.stepcounter.firstScreen.DisplayDataScreen
 import com.example.stepcounter.firstScreen.InputDataPage
 import com.example.stepcounter.foodScreen.AddNewMeal
@@ -74,7 +75,6 @@ class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
     private val viewModel: StepTrackerViewModel by viewModels()
     private val foodViewModal: StepTrackerViewModel by viewModels()
-
 
     @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController, currentDate, foodViewModal)
+                           CaloriesScreen(navController, currentDate)
                         }
                         composable("CaloriesPerProduct") {
                             CaloriesPerProduct(navController)
@@ -118,14 +118,14 @@ class MainActivity : ComponentActivity() {
                             InputDataPage(navController,this@MainActivity)
                         }
                         composable("MealOfDay"){
-                            AddNewMeal(navController)
+                            AddNewMeal(navController, foodViewModal)
                         }
                         composable("ManualInput"){
                             ManualInput(navController)
                         }
                     }
                     }
-                    //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 150))
+                    //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 165))
                 }
             }
             stepCounter.initialize(this)

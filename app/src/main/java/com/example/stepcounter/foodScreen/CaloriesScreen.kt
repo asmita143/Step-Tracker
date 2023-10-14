@@ -44,7 +44,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.R
 import com.example.stepcounter.database.StepTrackerViewModel
@@ -54,8 +53,7 @@ import java.time.LocalDate
 @Composable
 fun CaloriesScreen(
     navController: NavHostController,
-    currentDate: LocalDate,
-    foodViewModal: StepTrackerViewModel
+    currentDate: LocalDate
 ) {
     var isOverlayVisible by remember { mutableStateOf(false) }
     var isEatenTodayOverlayVisible by remember { mutableStateOf(false) }
@@ -70,8 +68,8 @@ fun CaloriesScreen(
     {
         CalorieCalculation(
             currentDate = currentDate.dayOfMonth.toString() + " " + currentDate.month.toString(),
-            consumedCalories = 1258F,
-            burnedCalories = 1358F
+            consumedCalories = 1185F,
+            burnedCalories = 1058F
         )
 
         Row(
@@ -244,7 +242,35 @@ fun EatenTodayOverlay(onCloseClick: () -> Unit, navController: NavHostController
                         },
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Row(Modifier.padding(5.dp)) {
+                    Row(Modifier.padding(5.dp))
+                    {
+                        Text(
+                            text = "Orange",
+                            style = Typography.labelSmall
+                        )
+                        Spacer(modifier = Modifier.width(60.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.clock), // Replace with your image resource
+                            contentDescription = "time",
+                            modifier = Modifier
+                                .size(15.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(text = "10:10pm", style = Typography.labelSmall)
+                    }
+                }
+
+                Card(
+                    modifier = Modifier
+                        .defaultMinSize(100.dp, 40.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate("CaloriesPerProduct")
+                        },
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Row(Modifier.padding(5.dp))
+                    {
                         Text(
                             text = "Orange",
                             style = Typography.labelSmall
