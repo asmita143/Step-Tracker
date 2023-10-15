@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.R
 import com.example.stepcounter.database.StepTrackerViewModel
-import com.example.stepcounter.database.entities.Meal
+import com.example.stepcounter.database.entities.MealToday
 import com.example.stepcounter.ui.theme.Typography
 import java.time.Instant
 import java.time.ZoneId
@@ -238,7 +238,7 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
 fun EatenTodayOverlay(
     onCloseClick: () -> Unit,
     navController: NavHostController,
-    eatenToday: List<Meal>
+    eatenToday: List<MealToday>
 ) {
 
     Column(

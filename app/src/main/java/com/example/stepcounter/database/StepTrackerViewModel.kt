@@ -6,10 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.stepcounter.WebServiceRepository
 import com.example.stepcounter.database.entities.FoodInfo
-import com.example.stepcounter.database.entities.Meal
+import com.example.stepcounter.database.entities.MealToday
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
-import java.sql.Date
 
 class StepTrackerViewModel(application: Application) : AndroidViewModel(application) {
     private val db = StepTrackerDB.getInstance(application)
@@ -25,17 +24,17 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun getMealEatenTodayByDate(date: String): LiveData<List<Meal>> {
-        return db.mealDao.getEatenTodayByDate(date)
+    fun getMealEatenTodayByDate(date: String): LiveData<List<MealToday>> {
+        return db.mealTodayDao.getEatenTodayByDate(date)
     }
 
-    fun getMealById(id : Int) : LiveData<List<Meal>>{
-        return db.mealDao.getMealById(id)
+    fun getMealById(id : Int) : LiveData<List<MealToday>>{
+        return db.mealTodayDao.getMealById(id)
     }
 
-     fun addMeal(meal : Meal) {
+     fun addMeal(mealToday : MealToday) {
          viewModelScope.launch {
-             db.mealDao.insert(meal)
+             db.mealTodayDao.insert(mealToday)
          }
     }
 

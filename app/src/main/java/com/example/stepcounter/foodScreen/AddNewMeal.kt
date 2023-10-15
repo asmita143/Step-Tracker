@@ -32,7 +32,7 @@ import androidx.navigation.NavHostController
 import com.example.stepcounter.R
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.database.entities.FoodInfo
-import com.example.stepcounter.database.entities.Meal
+import com.example.stepcounter.database.entities.MealToday
 import com.example.stepcounter.ui.theme.Typography
 import java.time.Instant
 import java.time.ZoneId
@@ -231,10 +231,10 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                                 val sugar =  tempMealList[index].sugar
 
                                 if(mass.toInt() == 100) {
-                                    foodViewModal.addMeal(Meal(0, mealName, mass.toInt(), calories, carbohydrate,  salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
+                                    foodViewModal.addMeal(MealToday(0, mealName, mass.toInt(), calories, carbohydrate,  salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
                                 }else{
                                     val calories1 = (calories * mass.toInt()) / 100
-                                    foodViewModal.addMeal(Meal(0, mealName, mass.toInt(), calories1, carbohydrate, salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
+                                    foodViewModal.addMeal(MealToday(0, mealName, mass.toInt(), calories1, carbohydrate, salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
                                 }
                                 name = ""
                                 mass = ""

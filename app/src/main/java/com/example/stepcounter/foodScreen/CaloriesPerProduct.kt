@@ -1,6 +1,5 @@
 package com.example.stepcounter.foodScreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.database.StepTrackerViewModel
-import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.ui.theme.Typography
 
 @Composable

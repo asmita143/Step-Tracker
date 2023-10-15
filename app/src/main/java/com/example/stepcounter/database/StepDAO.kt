@@ -5,7 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.database.entities.Step
 import java.sql.Date
 
