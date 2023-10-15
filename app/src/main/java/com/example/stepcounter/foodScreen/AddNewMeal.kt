@@ -1,6 +1,5 @@
 package com.example.stepcounter.foodScreen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.R
+import com.example.stepcounter.api.ScannedProduct
+import com.example.stepcounter.barcodeScanner.BarcodeScanner
+import com.example.stepcounter.barcodeScanner.BarcodeViewModel
+import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.database.entities.FoodInfo
 import com.example.stepcounter.database.entities.MealToday
@@ -41,9 +44,17 @@ import java.time.format.DateTimeFormatter
 @SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun AddNewMeal(navController: NavHostController,
+               barcodeViewModel: BarcodeViewModel,
+               stepTrackerViewModel: StepTrackerViewModel) {
 fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewModel) {
     var name by remember { mutableStateOf("") }
     var mass by remember { mutableStateOf("") }
+    val isScanned by barcodeViewModel.liveData.observeAsState(false)
+    val barcode by barcodeViewModel.liveData.observeAsState(null)
+    val productInfo by barcodeViewModel.product.observeAsState(null)
+    val productByName by stepTrackerViewModel.getProductsByName(name).observeAsState()
+
     val mealList = foodViewModal.getAllMeals().observeAsState(listOf())
     val tempMealList =  mealList.value
     var matchedItems by remember { mutableStateOf(listOf<FoodInfo>() ) }
@@ -95,7 +106,10 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                         painter = painterResource(id = R.drawable.ic_camera),
                         contentDescription = "Camera for scanning items",
                         modifier = Modifier
-                            .size(30.dp),
+                            .size(30.dp)
+                            .clickable {
+                                BarcodeScanner().startScanning(barcodeViewModel)
+                            },
                         contentScale = ContentScale.Fit
                     )
                 }
