@@ -4,8 +4,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-//    id("org.jetbrains.kotlin.kapt")
-//    kotlin("kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 
@@ -112,10 +110,6 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
-//    implementation("com.google.dagger:hilt-android:2.45")
-//    implementation("com.google.dagger:hilt-compiler:2.45")
-//    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-
     //For BarGraph
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
@@ -141,7 +135,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
 
-    //implementation("androidx.work:work-runtime:2.7.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")

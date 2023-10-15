@@ -7,12 +7,12 @@ import androidx.room.PrimaryKey
 data class ProductInfo(
     @PrimaryKey(autoGenerate = true)
     val productId: Long = 0,
-    val barcode: String?,
+    val barcode: String,
     val productName: String,
-    val calories: Int?,
-    val fat: Double?,
-    val carbohydrate: Double?,
-    val sugars: Double?,
-    val protein: Double?,
-    val salt: Double?
+    val calories: Int,
+    val fat: Double,
+    val carbohydrate: Double,
+    val sugars: Double,
+    val protein: Double,
+    val salt: Double
 )

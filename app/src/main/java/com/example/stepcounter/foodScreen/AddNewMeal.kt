@@ -1,5 +1,6 @@
 package com.example.stepcounter.foodScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,9 +34,9 @@ import com.example.stepcounter.api.ScannedProduct
 import com.example.stepcounter.barcodeScanner.BarcodeScanner
 import com.example.stepcounter.barcodeScanner.BarcodeViewModel
 import com.example.stepcounter.database.StepTrackerViewModel
-import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.database.entities.FoodInfo
 import com.example.stepcounter.database.entities.MealToday
+import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.ui.theme.Typography
 import java.time.Instant
 import java.time.ZoneId
@@ -47,17 +48,12 @@ import java.time.format.DateTimeFormatter
 fun AddNewMeal(navController: NavHostController,
                barcodeViewModel: BarcodeViewModel,
                stepTrackerViewModel: StepTrackerViewModel) {
-fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewModel) {
     var name by remember { mutableStateOf("") }
     var mass by remember { mutableStateOf("") }
-    val isScanned by barcodeViewModel.liveData.observeAsState(false)
-    val barcode by barcodeViewModel.liveData.observeAsState(null)
-    val productInfo by barcodeViewModel.product.observeAsState(null)
-    val productByName by stepTrackerViewModel.getProductsByName(name).observeAsState()
 
-    val mealList = foodViewModal.getAllMeals().observeAsState(listOf())
+    val mealList = stepTrackerViewModel.getAllProducts().observeAsState(listOf())
     val tempMealList =  mealList.value
-    var matchedItems by remember { mutableStateOf(listOf<FoodInfo>() ) }
+    var matchedItems by remember { mutableStateOf(listOf<ProductInfo>() ) }
     var isDialogVisible by remember { mutableStateOf(false) }
     var isMatchedItem by remember { mutableStateOf(true) }
 
@@ -205,13 +201,13 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                                         .fillMaxWidth()
                                         .clickable {
                                             //navController.navigate("CaloriesPerProduct")
-                                            name = matchedValue.name
+                                            name = matchedValue.productName
                                             isDialogVisible = false
                                         },
                                     shape = RoundedCornerShape(5.dp)
                                 ){
                                     Text(
-                                        text = matchedValue.name,
+                                        text = matchedValue.productName,
                                         style = Typography.labelSmall,
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -234,21 +230,21 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                     SmallFloatingActionButton(
                         onClick = {
                             isMatchedItem = true
-                            if(tempMealList.any { it.name.equals(name, ignoreCase = true )}) {
-                                val index = tempMealList.indexOfFirst { it.name.equals(name, ignoreCase = true) }
-                                var mealName = tempMealList[index].name
+                            if(tempMealList.any { it.productName.equals(name, ignoreCase = true )}) {
+                                val index = tempMealList.indexOfFirst { it.productName.equals(name, ignoreCase = true) }
+                                var mealName = tempMealList[index].productName
                                 val calories =  tempMealList[index].calories
                                 val carbohydrate = tempMealList[index].carbohydrate
                                 val salt =  tempMealList[index].salt
                                 val protein =  tempMealList[index].protein
-                                val fat =  tempMealList[index].fats
-                                val sugar =  tempMealList[index].sugar
+                                val fat =  tempMealList[index].fat
+                                val sugar =  tempMealList[index].sugars
 
                                 if(mass.toInt() == 100) {
-                                    foodViewModal.addMeal(MealToday(0, mealName, mass.toInt(), calories, carbohydrate,  salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
+                                    stepTrackerViewModel.addMeal(MealToday(0, mealName, mass.toInt(), calories, carbohydrate,  salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
                                 }else{
                                     val calories1 = (calories * mass.toInt()) / 100
-                                    foodViewModal.addMeal(MealToday(0, mealName, mass.toInt(), calories1, carbohydrate, salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
+                                    stepTrackerViewModel.addMeal(MealToday(0, mealName, mass.toInt(), calories1, carbohydrate, salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
                                 }
                                 name = ""
                                 mass = ""
@@ -312,11 +308,11 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
 }
 
 //This function checks and returns the names of partial match
-fun isPartialMatch(input: String, stringList: List<FoodInfo>): List<FoodInfo> {
-    val partialMatches = mutableListOf<FoodInfo>()
+fun isPartialMatch(input: String, stringList: List<ProductInfo>): List<ProductInfo> {
+    val partialMatches = mutableListOf<ProductInfo>()
 
     for (entry in stringList) {
-        val name = entry.name
+        val name = entry.productName
         if (name != null && name.contains(input, ignoreCase = true)) {
             partialMatches.add(entry)
         }

@@ -44,25 +44,31 @@ class BarcodeViewModel : ViewModel() {
     private suspend fun addScannedProduct(scannedProduct: ScannedProduct) {
         viewModelScope.launch {
             try {
-                // Checks whether the product is already in internal db
-                if (scannedProduct.code?.let { db.productDAO.productIsInDb(it) } == false) {
                 // Adds the product in internal db
-                    db.productDAO.addProduct(
-                        ProductInfo(
-                            barcode = scannedProduct.code,
-                            calories = scannedProduct.product?.nutriments?.calories?.toIntOrNull() ?: 0,
-                            carbohydrate = scannedProduct.product?.nutriments?.carbohydrates?.toDoubleOrNull()
-                                ?: 0.0,
-                            fat = scannedProduct.product?.nutriments?.fat?.toDoubleOrNull() ?: 0.0,
-                            sugars = scannedProduct.product?.nutriments?.sugars?.toDoubleOrNull() ?: 0.0,
-                            protein = scannedProduct.product?.nutriments?.proteins?.toDoubleOrNull() ?: 0.0,
-                            salt = scannedProduct.product?.nutriments?.salt?.toDoubleOrNull() ?: 0.0,
-                            productName = scannedProduct.product?.productName ?: "No name"))
-                    Toast.makeText(App.appContext, R.string.product_added, Toast.LENGTH_SHORT).show()
-                }
+                db.productDAO.addProduct(
+                    ProductInfo(
+                        barcode = scannedProduct.code!!,
+                        calories = scannedProduct.product?.nutriments?.calories?.toIntOrNull()
+                            ?: 0,
+                        carbohydrate = scannedProduct.product?.nutriments?.carbohydrates?.toDoubleOrNull()
+                            ?: 0.0,
+                        fat = scannedProduct.product?.nutriments?.fat?.toDoubleOrNull() ?: 0.0,
+                        sugars = scannedProduct.product?.nutriments?.sugars?.toDoubleOrNull()
+                            ?: 0.0,
+                        protein = scannedProduct.product?.nutriments?.proteins?.toDoubleOrNull()
+                            ?: 0.0,
+                        salt = scannedProduct.product?.nutriments?.salt?.toDoubleOrNull()
+                            ?: 0.0,
+                        productName = scannedProduct.product?.productName ?: "No name"
+                    )
+                )
+                Toast.makeText(App.appContext, R.string.product_added, Toast.LENGTH_SHORT)
+                    .show()
             } catch (e: Exception) {
-                Toast.makeText(App.appContext, R.string.product_already_added, Toast.LENGTH_SHORT).show()
+                Toast.makeText(App.appContext, R.string.product_not_found, Toast.LENGTH_SHORT)
+                    .show()
                 Log.d("PRDCT", "Unable to add the product")
+                Log.d("ex", e.toString())
             }
         }
     }

@@ -4,10 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.example.stepcounter.WebServiceRepository
-import com.example.stepcounter.database.entities.FoodInfo
 import com.example.stepcounter.database.entities.MealToday
-import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
@@ -37,16 +34,10 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
          viewModelScope.launch {
              db.mealTodayDao.insert(mealToday)
          }
+     }
+
     fun getAllProducts(): LiveData<List<ProductInfo>> {
         return db.productDAO.getAllProducts()
-    }
-
-    fun getProductsByBarcode(barcode: String): LiveData<ProductInfo> {
-        return db.productDAO.getScannedProductByBarcode(barcode)
-    }
-
-    fun getProductsByName(productName: String): LiveData<List<ProductInfo>> {
-        return db.productDAO.getProductsByName(productName)
     }
 
     fun addProduct(productInfo: ProductInfo) {
@@ -54,17 +45,4 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
             db.productDAO.addProduct(productInfo)
         }
     }
-
-    //function to fetch food list from internet and save it to room database
-    fun fetchAndSaveItems() {
-        viewModelScope.launch {
-            val response = repository.getListOfFood()
-            db.foodItemDao.insert(response)
-        }
-    }
-
-      fun getAllMeals() : LiveData<List<FoodInfo>>{
-        return db.foodItemDao.getAllFoodItems()
-    }
-
 }

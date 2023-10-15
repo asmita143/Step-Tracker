@@ -105,15 +105,15 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
-                            DisplayDataScreen(navController = navController ,this@MainActivity)
+                            DisplayDataScreen(navController = navController, this@MainActivity)
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController, currentDate, foodViewModel)
+                           CaloriesScreen(navController, foodViewModel)
                         }
                         composable("CaloriesPerProduct/{item}") {navBackStackEntry ->
                             navBackStackEntry.arguments?.getString("item")
-                                ?.let { CaloriesPerProduct(navController, it, foodViewModal) }
+                                ?.let { CaloriesPerProduct(navController, it, foodViewModel) }
                         }
                         composable("InputDataPage") {
                             InputDataPage(navController,this@MainActivity)
