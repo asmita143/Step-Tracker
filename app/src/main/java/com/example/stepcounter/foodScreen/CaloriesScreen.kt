@@ -59,7 +59,7 @@ fun CaloriesScreen(
 ) {
     var totalCalories = 0
     //get current date
-    val currentTimeMillis  = System.currentTimeMillis()
+    val currentTimeMillis = System.currentTimeMillis()
     val instant = Instant.ofEpochMilli(currentTimeMillis)
     val zoneId = ZoneId.of("UTC")
     val formattedTime = instant.atZone(zoneId)
@@ -69,7 +69,8 @@ fun CaloriesScreen(
 
     var isOverlayVisible by remember { mutableStateOf(false) }
     var isEatenTodayOverlayVisible by remember { mutableStateOf(false) }
-    val eatenToday = foodViewModal.getMealEatenTodayByDate("$formattedTime-$dayOfWeek").observeAsState(listOf())
+    val eatenToday =
+        foodViewModal.getMealEatenTodayByDate("$formattedTime-$dayOfWeek").observeAsState(listOf())
     val tempEatenToday = eatenToday.value
 
     for (meal in tempEatenToday) {
@@ -125,7 +126,7 @@ fun CaloriesScreen(
                     )
                 ) {
                     MoreInfoOverlay(
-                        onCloseClick = { isOverlayVisible = false },navController
+                        onCloseClick = { isOverlayVisible = false }, navController
                     )
                 }
 
@@ -170,7 +171,7 @@ fun CaloriesScreen(
 }
 
 @Composable
-fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
+fun MoreInfoOverlay(onCloseClick: () -> Unit, navController: NavHostController) {
     var scrollState by remember { mutableStateOf(ScrollState(0)) }
     Column(
         modifier = Modifier
@@ -254,7 +255,7 @@ fun EatenTodayOverlay(
         )
         //Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 0.dp)) {
-            items(eatenToday) {item ->
+            items(eatenToday) { item ->
                 Card(
                     modifier = Modifier
                         .defaultMinSize(100.dp, 30.dp)
@@ -353,8 +354,10 @@ private fun CalorieCalculation(
     val burnedCaloriesPercentage = (burnedCalories / consumedCalories)
 
     CircularData(burnedCaloriesPercent = burnedCaloriesPercentage)
+
 }
 
+// Reusable function to display data for the calculated percentage of the burned calories with the consumed calories
 @Composable
 private fun CircularData(
     burnedCaloriesPercent: Float,
@@ -377,16 +380,22 @@ private fun CircularData(
                     .height(burnedCaloriesPercentToSize.dp)
                     .width(size.dp)
                     .background(MaterialTheme.colorScheme.inversePrimary),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "${burnedCaloriesPercentToPercentage.toInt()}% calories burned",
-                    style = Typography.labelSmall
-                )
-
                 if (burnedCaloriesPercentToPercentage > 100) {
                     Text(
+                        text = "You should eat more.",
+                        style = Typography.labelSmall
+                    )
+
+                    Text(
                         text = "${(burnedCaloriesPercentToPercentage - 100).toInt()}% excess calories burned.",
+                        style = Typography.labelSmall
+                    )
+                } else {
+                    Text(
+                        text = "${burnedCaloriesPercentToPercentage.toInt()}% calories burned",
                         style = Typography.labelSmall
                     )
                 }

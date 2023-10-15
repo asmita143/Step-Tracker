@@ -35,7 +35,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.BottomAppBar
+import com.example.stepcounter.ui.theme.Typography
 
+// Manually adding the food details by the user
 @Composable
 fun ManualInput(navController: NavHostController) {
 
@@ -100,7 +102,6 @@ fun ManualInput(navController: NavHostController) {
                 KeyboardType.Number,
                 )
             }
-
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -112,13 +113,12 @@ fun ManualInput(navController: NavHostController) {
                 .fillMaxWidth(0.7f),
 
                 onClick = {
-                    navController.navigate("InputDataPage")
+                    navController.navigate("MealOfDay")
                 }
             ) {
                 Text(
                     "Save and Continue",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black
+                    style = Typography.labelSmall
                 )
             }
         }

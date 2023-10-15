@@ -27,9 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.MainActivity
 import com.example.stepcounter.R
+import com.example.stepcounter.ui.theme.Typography
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
-
+// Data page to enter the detail of the user
 @Composable
 fun InputDataPage(navController: NavHostController, context: Context) {
     var name by remember { mutableStateOf(TextFieldValue()) }
@@ -101,7 +102,7 @@ fun InputDataPage(navController: NavHostController, context: Context) {
             ) {
                 Text(
                     "Save and Continue",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = Typography.labelSmall,
                     color = Color.Black
                 )
             }
@@ -175,7 +176,7 @@ fun InputData(
 
 }
 
-
+// Save the user data in shared preferences
 fun saveUserData(key: String, value: String, context: Context) {
     val sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()

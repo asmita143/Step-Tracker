@@ -44,6 +44,7 @@ import com.example.stepcounter.ui.theme.md_theme_light_background
 import com.example.stepcounter.ui.theme.md_theme_light_onSecondary
 import com.example.stepcounter.ui.theme.md_theme_light_tertiary
 
+// Displaying data for steps taken and remaining steps from the targeted steps
 class StepInfoTop {
     @Composable
     fun StepsInfoSection(

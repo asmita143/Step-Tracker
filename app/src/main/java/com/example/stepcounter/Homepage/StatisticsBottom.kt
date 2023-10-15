@@ -28,6 +28,7 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
+// Bar graph for displaying steps taken in a week or day
 class StatisticsGraph{
 
     @Composable

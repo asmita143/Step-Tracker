@@ -27,6 +27,7 @@ import com.example.stepcounter.Screen
 import com.example.stepcounter.ui.theme.Typography
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
+// Screen for displaying profile of the user
 @Composable
 fun DisplayDataScreen(navController: NavHostController, context: Context) {
     val name = loadUserData("user_name", context)
@@ -105,12 +106,13 @@ fun DisplayDataScreen(navController: NavHostController, context: Context) {
 
     }
 }
-
+// Loading data from shared preferences
 fun loadUserData(key: String, context: Context): String {
     val sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
     return sharedPreferences.getString(key, "") ?: ""
 }
 
+// Function to display data
 @Composable
 private  fun  InputDataDisplayBox(icon: Int,
                                   contentDesc: String,

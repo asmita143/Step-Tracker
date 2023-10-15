@@ -32,6 +32,7 @@ import androidx.navigation.NavHostController
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.ui.theme.Typography
 
+// Detail of the calories per product
 @Composable
 fun CaloriesPerProduct(navController: NavHostController, id: String, foodViewModel: StepTrackerViewModel) {
     val meal  = foodViewModel.getMealById(id.toInt()).observeAsState(listOf())

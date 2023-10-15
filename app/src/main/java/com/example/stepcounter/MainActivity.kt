@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
         loadData()
         setContent {
             val navController = rememberNavController()
-            val currentTimeMillis  = System.currentTimeMillis()
+            val currentTimeMillis = System.currentTimeMillis()
             val instant = Instant.ofEpochMilli(currentTimeMillis)
             val zoneId = ZoneId.of("UTC")
             val formattedTime = instant.atZone(zoneId)
@@ -91,6 +91,7 @@ class MainActivity : ComponentActivity() {
 
             foodViewModal.fetchAndSaveItems()
 
+//Navigation
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -100,36 +101,41 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = Screen.Home.route) {
                         composable(route = Screen.Home.route) {
                             //Create and display the content for the Home screen
-                            Home(navController, stepCounter.getTotalStepsTaken(), viewModel, dayOfWeek)
+                            Home(
+                                navController,
+                                stepCounter.getTotalStepsTaken(),
+                                viewModel,
+                                dayOfWeek
+                            )
                         }
                         composable(route = Screen.Profile.route) {
                             // Create and display the content for the Profile screen
-                            DisplayDataScreen(navController = navController ,this@MainActivity)
+                            DisplayDataScreen(navController = navController, this@MainActivity)
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController, foodViewModal)
+                            CaloriesScreen(navController, foodViewModal)
                         }
-                        composable("CaloriesPerProduct/{item}") {navBackStackEntry ->
+                        composable("CaloriesPerProduct/{item}") { navBackStackEntry ->
                             navBackStackEntry.arguments?.getString("item")
                                 ?.let { CaloriesPerProduct(navController, it, foodViewModal) }
                         }
                         composable("InputDataPage") {
-                            InputDataPage(navController,this@MainActivity)
+                            InputDataPage(navController, this@MainActivity)
                         }
-                        composable("MealOfDay"){
+                        composable("MealOfDay") {
                             AddNewMeal(navController, foodViewModal)
                         }
-                        composable("ManualInput"){
+                        composable("ManualInput") {
                             ManualInput(navController)
                         }
                     }
-                    }
-                    //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 165))
                 }
+                //viewModel.addSteps(Step(0, "$formattedTime-$dayOfWeek", 165))
             }
-            stepCounter.initialize(this)
         }
+        stepCounter.initialize(this)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -155,18 +161,19 @@ class MainActivity : ComponentActivity() {
     private fun loadData() {
         // In this function we will retrieve data
         val sharedPreferences = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
-        Log.d("MSGLoad" , sharedPreferences.getFloat("key1", 0f).toString())
+        Log.d("MSGLoad", sharedPreferences.getFloat("key1", 0f).toString())
         val savedNumber = sharedPreferences.getFloat("key1", 0f)
         stepCounter.setTotalStepsTaken(savedNumber)
     }
 }
 
-class StepCounter: SensorEventListener {
+// Sensor to detect the steps taken by the user
+class StepCounter : SensorEventListener {
     private var sensorManager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var magnitudePreviousStep = 0f
-    private var totalSteps : MutableState<Float> = mutableFloatStateOf(0f)
-    private var previousTotalSteps : MutableState<Float> = mutableFloatStateOf(0f)
+    private var totalSteps: MutableState<Float> = mutableFloatStateOf(0f)
+    private var previousTotalSteps: MutableState<Float> = mutableFloatStateOf(0f)
 
     fun initialize(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -179,16 +186,16 @@ class StepCounter: SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            val x : Float = event.values[0]
-            val y : Float = event.values[1]
-            val z :Float = event.values[2]
-            val magnitude : Float = sqrt(x*x + y*y + z*z)
+            val x: Float = event.values[0]
+            val y: Float = event.values[1]
+            val z: Float = event.values[2]
+            val magnitude: Float = sqrt(x * x + y * y + z * z)
 
-            var magnitudeDelta : Float = magnitude - magnitudePreviousStep
+            var magnitudeDelta: Float = magnitude - magnitudePreviousStep
 
             magnitudePreviousStep = magnitude
 
-            if(magnitudeDelta > 6) {
+            if (magnitudeDelta > 6) {
                 totalSteps.value++
             }
         }
@@ -207,7 +214,7 @@ class StepCounter: SensorEventListener {
         return totalSteps.value
     }
 
-    fun setTotalStepsTaken(steps : Float) {
+    fun setTotalStepsTaken(steps: Float) {
         this.totalSteps.value = steps
         Log.d("MSGSet", totalSteps.value.toString())
     }
@@ -227,8 +234,9 @@ fun Home(
     val stepInfo = StepInfoTop()
     val step = viewModel.getAllSteps().observeAsState(listOf())
     Log.d("MSGHome", step.value.size.toString())
-val caloriesBurned = totalStepsTaken * 0.04f // steps * stride length * weight * constant(0.0002) so 0.4 is the average excluding the steps 
-        val targetCalories = 500f
+    val caloriesBurned =
+        totalStepsTaken * 0.04f // steps * stride length * weight * constant(0.0002) so 0.4 is the average excluding the steps
+    val targetCalories = 500f
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -238,19 +246,19 @@ val caloriesBurned = totalStepsTaken * 0.04f // steps * stride length * weight *
     {
         stepInfo.StepsInfoSection(totalStepsTaken)
 
-         if (caloriesBurned < targetCalories) {
-                Text(
-                    text = "You should burn more calories today!",
-                    color = Color.Red,
-                    
+        if (caloriesBurned < targetCalories) {
+            Text(
+                text = "You should burn more calories today!",
+                color = Color.Red,
+
                 )
-            } else {
-                Text(
-                    text = "Great job on reaching your calorie burn goal!",
-                    color = Color.Green,
-                    
+        } else {
+            Text(
+                text = "Great job on reaching your calorie burn goal!",
+                color = Color.Green,
+
                 )
-            }
+        }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -272,9 +280,10 @@ val caloriesBurned = totalStepsTaken * 0.04f // steps * stride length * weight *
 
         bargraph.BarGraph(step.value, dayOfWeek)
         Spacer(modifier = Modifier.weight(1f))
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
         )
         {
             BottomAppBar(navController)
@@ -282,6 +291,7 @@ val caloriesBurned = totalStepsTaken * 0.04f // steps * stride length * weight *
     }
 }
 
+// Bottom navigation bar
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -310,8 +320,13 @@ fun BottomAppBar(navController: NavHostController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         NavigationItem(navController, Screen.Menu, Icons.Default.Menu, "Menu")
-                        NavigationItem(navController , Screen.Home, Icons.Default.Home, "Home")
-                        NavigationItem(navController, Screen.Profile, Icons.Default.AccountCircle, "Profile")
+                        NavigationItem(navController, Screen.Home, Icons.Default.Home, "Home")
+                        NavigationItem(
+                            navController,
+                            Screen.Profile,
+                            Icons.Default.AccountCircle,
+                            "Profile"
+                        )
                     }
                 }
             }
