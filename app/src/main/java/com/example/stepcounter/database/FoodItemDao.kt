@@ -6,6 +6,11 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.example.stepcounter.database.entities.FoodInfo
 
+/**
+ * Provides access to read/write operation on [FoodInfo] food_items table
+ * Used by the view models to format the query results for the use in UI
+ */
+
 @Dao
 interface FoodItemDao {
     @Insert

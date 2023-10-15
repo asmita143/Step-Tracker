@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
 
             foodViewModal.fetchAndSaveItems()
 
-//Navigation
+            //Navigation
             StepCounterTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -127,7 +127,7 @@ class MainActivity : ComponentActivity() {
                             AddNewMeal(navController, foodViewModal)
                         }
                         composable("ManualInput") {
-                            ManualInput(navController)
+                            ManualInput(navController, foodViewModal)
                         }
                     }
                 }

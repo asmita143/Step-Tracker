@@ -7,7 +7,10 @@ import androidx.room.Query
 import com.example.stepcounter.database.entities.FoodInfo
 import com.example.stepcounter.database.entities.MealToday
 
-
+/**
+ * Provides access to read/write operation on [MealToday] Meal_Today
+ * Used by the view models to format the query results for the use in UI
+ */
 @Dao
 interface MealTodayDao {
     @Insert

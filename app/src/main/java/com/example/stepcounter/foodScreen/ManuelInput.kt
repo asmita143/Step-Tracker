@@ -35,11 +35,19 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.BottomAppBar
+import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.MealToday
 import com.example.stepcounter.ui.theme.Typography
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-// Manually adding the food details by the user
+/**
+ * User can add the food and its information manually
+ * added information are stored in the room database
+ */
 @Composable
-fun ManualInput(navController: NavHostController) {
+fun ManualInput(navController: NavHostController, foodViewModal: StepTrackerViewModel) {
 
     var food by remember { mutableStateOf(TextFieldValue()) }
     var mass by remember { mutableStateOf(TextFieldValue()) }
@@ -51,6 +59,15 @@ fun ManualInput(navController: NavHostController) {
     var salt by remember { mutableStateOf(TextFieldValue()) }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+
+    //get current date
+    val currentTimeMillis  = System.currentTimeMillis()
+    val instant = Instant.ofEpochMilli(currentTimeMillis)
+    val zoneId = ZoneId.of("UTC")
+    val formattedTime = instant.atZone(zoneId)
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    val currentDate = instant.atZone(zoneId).toLocalDate()
+    val dayOfWeek = currentDate.dayOfWeek
 
     Column(
         modifier = Modifier
@@ -97,9 +114,9 @@ fun ManualInput(navController: NavHostController) {
                 )
                 InputData(
                         value = salt,
-                onValueChange = { sugar = it },
-                hint = "Salt",
-                KeyboardType.Number,
+                    onValueChange = { sugar = it },
+                    hint = "Salt",
+                    KeyboardType.Number,
                 )
             }
         }
@@ -113,7 +130,10 @@ fun ManualInput(navController: NavHostController) {
                 .fillMaxWidth(0.7f),
 
                 onClick = {
-                    navController.navigate("MealOfDay")
+                    foodViewModal.addMeal(MealToday(
+                        0,food.text, mass.text.toInt(), calories.text.toInt(),
+                        carbs.text.toDouble(), salt.text.toDouble(), protein.text.toDouble(),
+                        fat.text.toDouble(), sugar.text.toDouble(),"$formattedTime-$dayOfWeek"))
                 }
             ) {
                 Text(

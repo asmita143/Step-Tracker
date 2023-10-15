@@ -14,6 +14,7 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
     private val db = StepTrackerDB.getInstance(application)
     private val repository: WebServiceRepository = WebServiceRepository()
 
+    //get all the steps  that are stored in the database
     fun getAllSteps(): LiveData<List<Step>> {
         return db.stepDAO.getAllSteps()
     }
@@ -24,6 +25,7 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    //get all meals that are eaten by the users in the current date
     fun getMealEatenTodayByDate(date: String): LiveData<List<MealToday>> {
         return db.mealTodayDao.getEatenTodayByDate(date)
     }
@@ -32,6 +34,7 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         return db.mealTodayDao.getMealById(id)
     }
 
+    //add meals that the user eats in the current date
      fun addMeal(mealToday : MealToday) {
          viewModelScope.launch {
              db.mealTodayDao.insert(mealToday)
@@ -46,7 +49,7 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-      fun getAllMeals() : LiveData<List<FoodInfo>>{
+    fun getAllMeals() : LiveData<List<FoodInfo>>{
         return db.foodItemDao.getAllFoodItems()
     }
 

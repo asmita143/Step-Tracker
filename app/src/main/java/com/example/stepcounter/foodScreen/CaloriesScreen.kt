@@ -52,6 +52,12 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+/**
+ * This screen will show the consumed calories and burned calories by the user in the current day
+ * user can see the items/meals that are eaten today
+ * Clicking more info button will show a pop up box where user will have an option to add the
+ * meal which are consumed today.
+ */
 @Composable
 fun CaloriesScreen(
     navController: NavHostController,
@@ -126,7 +132,7 @@ fun CaloriesScreen(
                     )
                 ) {
                     MoreInfoOverlay(
-                        onCloseClick = { isOverlayVisible = false }, navController
+                        onCloseClick = { isOverlayVisible = false }, navController, totalCalories
                     )
                 }
 
@@ -171,7 +177,7 @@ fun CaloriesScreen(
 }
 
 @Composable
-fun MoreInfoOverlay(onCloseClick: () -> Unit, navController: NavHostController) {
+fun MoreInfoOverlay(onCloseClick: () -> Unit, navController: NavHostController, totalCalories: Int) {
     var scrollState by remember { mutableStateOf(ScrollState(0)) }
     Column(
         modifier = Modifier
@@ -183,7 +189,7 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit, navController: NavHostController) 
     ) {
         repeat(1) {
             Text(
-                text = "Total calories:1500",
+                text = "Total Calories: $totalCalories",
                 style = Typography.labelLarge,
                 color = Color.Black
             )

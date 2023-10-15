@@ -38,7 +38,13 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-// Adding new meal consumed by the user
+/**
+ * User can write the name of meal and the mass of consumed meal
+ * If there is a typo, it will suggest a list of meal name, that matches with the name written by the user
+ * User can then select from the provided list and save it to the database.
+ * If there is no suggestion, user have an option to add the meal manually
+ */
+
 @SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

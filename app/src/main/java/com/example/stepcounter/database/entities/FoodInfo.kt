@@ -3,6 +3,11 @@ package com.example.stepcounter.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * Represents a single table named food_items in the database
+ * Each property corresponds to a column
+ */
+
 @Entity(tableName = "food_items")
 data class FoodInfo (
     @PrimaryKey(autoGenerate = true)

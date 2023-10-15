@@ -8,6 +8,10 @@ import androidx.room.Query
 import com.example.stepcounter.database.entities.Step
 import java.sql.Date
 
+/**
+ * Provides access to read/write operation on [Step]
+ * Used by the view models to format the query results for the use in UI
+ */
 @Dao
 interface StepDAO {
     @Insert(onConflict = OnConflictStrategy.ABORT)
