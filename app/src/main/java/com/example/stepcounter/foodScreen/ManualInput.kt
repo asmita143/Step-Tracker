@@ -1,12 +1,11 @@
 package com.example.stepcounter.foodScreen
 
-import android.content.Context
-import androidx.compose.foundation.Image
+
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,20 +30,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.stepcounter.App
 import com.example.stepcounter.BottomAppBar
 import com.example.stepcounter.R
+import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.ProductInfo
+import kotlin.math.roundToInt
 
 @Composable
-fun ManualInput(navController: NavHostController) {
+fun ManualInput(navController: NavHostController, stepTrackerViewModel: StepTrackerViewModel) {
 
     var food by remember { mutableStateOf(TextFieldValue()) }
     var mass by remember { mutableStateOf(TextFieldValue()) }
@@ -98,13 +98,13 @@ fun ManualInput(navController: NavHostController) {
                 )
                 InputData(
                     value = protein,
-                    onValueChange = { sugar = it },
+                    onValueChange = { protein = it },
                     hint = "Protein",
                     KeyboardType.Number,
                 )
                 InputData(
                         value = salt,
-                onValueChange = { sugar = it },
+                onValueChange = { salt = it },
                 hint = "Salt",
                 KeyboardType.Number,
                 )
@@ -121,7 +121,34 @@ fun ManualInput(navController: NavHostController) {
                 .fillMaxWidth(0.7f),
 
                 onClick = {
-
+                    // Adds the product manually into internal database
+                    if (
+                        food.text.isNotEmpty() &&
+                        mass.text.isNotEmpty() &&
+                        calories.text.isNotEmpty() &&
+                        fat.text.isNotEmpty() &&
+                        carbs.text.isNotEmpty() &&
+                        sugar.text.isNotEmpty() &&
+                        protein.text.isNotEmpty() &&
+                        salt.text.isNotEmpty()
+                        )
+                    {
+                        stepTrackerViewModel.addProduct(
+                            ProductInfo(
+                                barcode = "NO BARCODE",
+                                calories = calories.text.toInt(),
+                                carbohydrate = carbs.text.toDouble(),
+                                fat = fat.text.toDouble(),
+                                sugars = sugar.text.toDouble(),
+                                protein = protein.text.toDouble(),
+                                salt = salt.text.toDouble(),
+                                productName = food.text
+                            )
+                        )
+                        Toast.makeText(App.appContext, R.string.product_added, Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(App.appContext, R.string.fill_all, Toast.LENGTH_SHORT).show()
+                    }
 
                     // Navigate to the next screen
                     navController.navigate("InputDataPage")

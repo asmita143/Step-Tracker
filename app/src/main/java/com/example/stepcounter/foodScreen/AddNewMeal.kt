@@ -40,9 +40,8 @@ fun AddNewMeal(navController: NavHostController,
     val isScanned by barcodeViewModel.liveData.observeAsState(false)
     val barcode by barcodeViewModel.liveData.observeAsState(null)
     val productInfo by barcodeViewModel.product.observeAsState(null)
+    val productByName by stepTrackerViewModel.getProductsByName(name).observeAsState()
 
-
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -76,7 +75,6 @@ fun AddNewMeal(navController: NavHostController,
                             .size(30.dp)
                             .clickable {
                                 BarcodeScanner().startScanning(barcodeViewModel)
-                                Log.d("Scanned", isScanned.toString())
                             },
                         contentScale = ContentScale.Fit
                     )
@@ -99,10 +97,6 @@ fun AddNewMeal(navController: NavHostController,
                               contentDescription = "Search for a product",
                               modifier = Modifier
                                   .clickable {
-                                      val list = stepTrackerViewModel.getProductsByName(name)
-                                      Log.d("Search", list.value.toString())
-                                      Log.d("Search", name)
-                                      Log.d("Search hardcode", stepTrackerViewModel.getProductsByName("Breakfast Cereal, Wheat Flakes, Nuts, Almond, Nut Flakers, Lidl").value.toString())
                                   },
                               )
 
@@ -203,72 +197,5 @@ fun AddNewMeal(navController: NavHostController,
             com.example.stepcounter.BottomAppBar(navController)
         }
 
-    }
-}
-
-@Composable
-fun DisplayData(viewModel: BarcodeViewModel = BarcodeViewModel()) {
-    val data by viewModel.liveData.observeAsState()
-    data?.let { Log.d("LIVE DATA in display", it) }
-
-    Column {
-        Text(text = "Data from LiveData: $data")
-    }
-}
-
-@Composable
-fun CheckTheProductDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-) {
-    AlertDialog(
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
-}
-
-@Composable
-fun CheckTheProduct(scannedProduct: ScannedProduct) {
-    val openAlertDialog = remember { mutableStateOf(false) }
-
-    when {
-        openAlertDialog.value -> {
-            CheckTheProductDialog(
-                onDismissRequest = { openAlertDialog.value = false },
-                onConfirmation = {
-                    openAlertDialog.value = false
-                    println("Product added")
-                },
-                dialogTitle = "Is it correct?",
-                dialogText = "Are you looking for: ${scannedProduct.product?.productName}"
-            )
-        }
     }
 }

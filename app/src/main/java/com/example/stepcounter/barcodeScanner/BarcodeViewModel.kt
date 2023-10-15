@@ -19,8 +19,6 @@ class BarcodeViewModel : ViewModel() {
     val liveData: LiveData<String> = _liveData
     private val _product = MutableLiveData<ScannedProduct>(null)
     val product: LiveData<ScannedProduct> = _product
-    private val _isScanned = MutableLiveData<Boolean>()
-    val isScanned: LiveData<Boolean> = _isScanned
 
     private val db = StepTrackerDB.getInstance()
 
@@ -35,9 +33,7 @@ class BarcodeViewModel : ViewModel() {
                     )
                 }
                 product.value?.let { addScannedProduct(it) }
-                itemScanned()
                 Log.d("Product found", product.value.toString())
-                Log.d("Scanned", isScanned.value.toString())
             } catch (e: Exception) {
                 Toast.makeText(App.appContext, R.string.product_not_found, Toast.LENGTH_SHORT).show()
                 Log.d("PRDCT", "No product found")
@@ -62,7 +58,7 @@ class BarcodeViewModel : ViewModel() {
                             protein = scannedProduct.product?.nutriments?.proteins?.toDoubleOrNull() ?: 0.0,
                             salt = scannedProduct.product?.nutriments?.salt?.toDoubleOrNull() ?: 0.0,
                             productName = scannedProduct.product?.productName ?: "No name"))
-                    Toast.makeText(App.appContext, R.string.product_found, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(App.appContext, R.string.product_added, Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(App.appContext, R.string.product_already_added, Toast.LENGTH_SHORT).show()
@@ -75,9 +71,5 @@ class BarcodeViewModel : ViewModel() {
     fun updateData(newData: String) {
         _liveData.value = newData
         Log.d("LIVE DATA in update", newData)
-    }
-
-    private fun itemScanned() {
-        _isScanned.value = true
     }
 }

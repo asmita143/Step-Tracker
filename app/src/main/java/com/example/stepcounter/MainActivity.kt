@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                                 )
                         }
                         composable("ManualInput"){
-                            ManualInput(navController)
+                            ManualInput(navController, foodViewModel)
                         }
                     }
                     }

@@ -10,5 +10,5 @@ data class Meal(
     val mealId: Long,
     val productId: Long,
     val grams: Double,
-//    val date: Date,
+    val date: Date,
 )
