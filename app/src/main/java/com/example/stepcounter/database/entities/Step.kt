@@ -14,4 +14,5 @@ data class Step(
     val stepId: Long,
     val date: String,
     val stepAmount: Long,
+//    val caloriesBurnt: Long
 )

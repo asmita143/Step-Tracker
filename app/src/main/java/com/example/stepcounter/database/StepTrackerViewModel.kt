@@ -4,15 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.example.stepcounter.WebServiceRepository
 import com.example.stepcounter.database.entities.FoodInfo
 import com.example.stepcounter.database.entities.MealToday
+import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
 
 class StepTrackerViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = StepTrackerDB.getInstance(application)
-    private val repository: WebServiceRepository = WebServiceRepository()
+    private val db = StepTrackerDB.getInstance()
 
     //get all the steps  that are stored in the database
     fun getAllSteps(): LiveData<List<Step>> {
@@ -39,13 +38,15 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
          viewModelScope.launch {
              db.mealTodayDao.insert(mealToday)
          }
+     }
+
+    fun getAllProducts(): LiveData<List<ProductInfo>> {
+        return db.productDAO.getAllProducts()
     }
 
-    //function to fetch food list from internet and save it to room database
-    fun fetchAndSaveItems() {
+    fun addProduct(productInfo: ProductInfo) {
         viewModelScope.launch {
-            val response = repository.getListOfFood()
-            db.foodItemDao.insert(response)
+            db.productDAO.addProduct(productInfo)
         }
     }
 

@@ -56,6 +56,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
+import com.example.stepcounter.barcodeScanner.BarcodeScanner
+import com.example.stepcounter.barcodeScanner.BarcodeViewModel
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.firstScreen.DisplayDataScreen
 import com.example.stepcounter.firstScreen.InputDataPage
@@ -73,7 +75,8 @@ import kotlin.math.sqrt
 class MainActivity : ComponentActivity() {
     private val stepCounter = StepCounter()
     private val viewModel: StepTrackerViewModel by viewModels()
-    private val foodViewModal: StepTrackerViewModel by viewModels()
+    private val foodViewModel: StepTrackerViewModel by viewModels()
+    private val barcodeViewModel: BarcodeViewModel by viewModels()
 
     @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,8 +91,6 @@ class MainActivity : ComponentActivity() {
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             val currentDate = instant.atZone(zoneId).toLocalDate()
             val dayOfWeek = currentDate.dayOfWeek
-
-            foodViewModal.fetchAndSaveItems()
 
             //Navigation
             StepCounterTheme {
@@ -114,20 +115,25 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                            CaloriesScreen(navController, foodViewModal)
+                           CaloriesScreen(navController, foodViewModel)
                         }
                         composable("CaloriesPerProduct/{item}") { navBackStackEntry ->
                             navBackStackEntry.arguments?.getString("item")
-                                ?.let { CaloriesPerProduct(navController, it, foodViewModal) }
+                                ?.let { CaloriesPerProduct(navController, it, foodViewModel) }
                         }
                         composable("InputDataPage") {
                             InputDataPage(navController, this@MainActivity)
                         }
-                        composable("MealOfDay") {
-                            AddNewMeal(navController, foodViewModal)
+
+                        composable("MealOfDay"){
+                            AddNewMeal(navController,
+                                barcodeViewModel,
+                                foodViewModel
+                                )
                         }
-                        composable("ManualInput") {
-                            ManualInput(navController, foodViewModal)
+                        composable("ManualInput"){
+                            ManualInput(navController, foodViewModel)
+
                         }
                     }
                 }

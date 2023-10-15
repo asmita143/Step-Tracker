@@ -1,5 +1,7 @@
 package com.example.stepcounter.foodScreen
 
+
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -34,13 +37,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.stepcounter.BottomAppBar
+import com.example.stepcounter.App
+import com.example.stepcounter.firstScreen.InputData
 import com.example.stepcounter.database.StepTrackerViewModel
 import com.example.stepcounter.database.entities.MealToday
 import com.example.stepcounter.ui.theme.Typography
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import com.example.stepcounter.R
+import com.example.stepcounter.database.entities.ProductInfo
+import kotlin.math.roundToInt
 
 /**
  * User can add the food and its information manually
@@ -108,12 +115,12 @@ fun ManualInput(navController: NavHostController, foodViewModal: StepTrackerView
                 )
                 InputData(
                     value = protein,
-                    onValueChange = { sugar = it },
+                    onValueChange = { protein = it },
                     hint = "Protein",
                     KeyboardType.Number,
                 )
                 InputData(
-                        value = salt,
+                    value = salt,
                     onValueChange = { sugar = it },
                     hint = "Salt",
                     KeyboardType.Number,
@@ -134,6 +141,37 @@ fun ManualInput(navController: NavHostController, foodViewModal: StepTrackerView
                         0,food.text, mass.text.toInt(), calories.text.toInt(),
                         carbs.text.toDouble(), salt.text.toDouble(), protein.text.toDouble(),
                         fat.text.toDouble(), sugar.text.toDouble(),"$formattedTime-$dayOfWeek"))
+                    // Adds the product manually into internal database
+                    if (
+                        food.text.isNotEmpty() &&
+                        mass.text.isNotEmpty() &&
+                        calories.text.isNotEmpty() &&
+                        fat.text.isNotEmpty() &&
+                        carbs.text.isNotEmpty() &&
+                        sugar.text.isNotEmpty() &&
+                        protein.text.isNotEmpty() &&
+                        salt.text.isNotEmpty()
+                        )
+                    {
+                        foodViewModal.addProduct(
+                            ProductInfo(
+                                barcode = "NO BARCODE",
+                                calories = calories.text.toInt(),
+                                carbohydrate = carbs.text.toDouble(),
+                                fat = fat.text.toDouble(),
+                                sugars = sugar.text.toDouble(),
+                                protein = protein.text.toDouble(),
+                                salt = salt.text.toDouble(),
+                                productName = food.text
+                            )
+                        )
+                        Toast.makeText(App.appContext, R.string.product_added, Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(App.appContext, R.string.fill_all, Toast.LENGTH_SHORT).show()
+                    }
+
+                    // Navigate to the next screen
+                    navController.navigate("InputDataPage")
                 }
             ) {
                 Text(
@@ -142,17 +180,6 @@ fun ManualInput(navController: NavHostController, foodViewModal: StepTrackerView
                 )
             }
         }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-        )
-        {
-            BottomAppBar(navController)
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
 
     }
 }

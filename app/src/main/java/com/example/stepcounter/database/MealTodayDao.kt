@@ -16,8 +16,8 @@ interface MealTodayDao {
     @Insert
     suspend fun insert(mealToday: MealToday)
 
-    @Query("select * from food_items")
-    fun getMeal() : List<FoodInfo>
+    @Query("select * from meal_today")
+    fun getMeal() : List<MealToday>
 
     @Query("SELECT * FROM meal_today WHERE date = :date")
     fun getEatenTodayByDate(date: String): LiveData<List<MealToday>>
