@@ -20,4 +20,7 @@ interface ProductDAO {
 
     @Query("SELECT * FROM productInfo WHERE productName = :productName")
     fun getProductsByName(productName: String): LiveData<List<ProductInfo>>
+
+    @Query("SELECT EXISTS (SELECT * FROM productInfo WHERE barcode = :barcode)")
+    fun productIsInDb(barcode: String): Boolean
 }

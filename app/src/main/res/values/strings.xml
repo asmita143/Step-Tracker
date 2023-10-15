@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Step counter</string>
-    <string name="product_scan_success">Product scan successful</string>
+    <string name="product_scan_success">Product scan successful!</string>
     <string name="product_scan_error">Product not found! Please enter information manually!</string>
+    <string name="scan_cancelled">Scanning cancelled!</string>
+    <string name="scan_failure">Failed to start the scanner</string>
+    <string name="product_found">Product added!</string>
+    <string name="product_not_found">Product not found!</string>
+    <string name="unable_to_add">Unable to add the product!</string>
+    <string name="product_already_added">You have already added this product! Try searching for it!</string>
 </resources>

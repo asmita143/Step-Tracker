@@ -11,11 +11,12 @@ object ProductApi {
     private const val URL_BARCODE = "https://us.openfoodfacts.org/api/v2/"
     private const val URL_FINELI = "https://users.metropolia.fi/~darjapo/"
 
+    // API call for the barcode product retrieve
     interface BarcodeProduct {
         @GET("product/{barCode}")
         suspend fun getInfoByBarCode(
             @Path("barCode") barCode: String,
-            @Query("fields") fields: String): ProductInfo
+            @Query("fields") fields: String): ScannedProduct
     }
 
     private val retrofitBarcode = Retrofit.Builder()
@@ -27,6 +28,7 @@ object ProductApi {
         retrofitBarcode.create(BarcodeProduct::class.java)
     }
 
+    // API call for retrieving the Fineli database with products
     interface FineliProducts {
         @GET("jsonminifier.json")
         suspend fun getProducts(): List<NutrimentsFineli>
@@ -40,9 +42,4 @@ object ProductApi {
     val fineliProduct: FineliProducts by lazy {
         retrofitFineli.create(FineliProducts::class.java)
     }
-}
-
-class WebServiceRepository {
-    private val call = ProductApi.fineliProduct
-    suspend fun getFineliList() = call.getProducts()
 }

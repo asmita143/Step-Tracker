@@ -1,6 +1,8 @@
 package com.example.stepcounter.api
 
+import com.google.gson.annotations.SerializedName
+
 data class Product(
     val nutriments: NutrimentsBarcode?,
-    val productName: String?
+    @SerializedName("product_name") val productName: String?
 )

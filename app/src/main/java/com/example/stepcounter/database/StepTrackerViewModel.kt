@@ -3,15 +3,12 @@ package com.example.stepcounter.database
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.stepcounter.api.WebServiceRepository
 import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.database.entities.ProductInfo
 import com.example.stepcounter.database.entities.Step
 import kotlinx.coroutines.launch
 import java.sql.Date
-import kotlin.math.roundToInt
 
 class StepTrackerViewModel(application: Application) : AndroidViewModel(application) {
     private val db = StepTrackerDB.getInstance()
@@ -46,7 +43,7 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         return db.productDAO.getProductsByName(productName)
     }
 
-    fun addProducts(productInfo: ProductInfo) {
+    fun addProduct(productInfo: ProductInfo) {
         viewModelScope.launch {
             db.productDAO.addProduct(productInfo)
         }
