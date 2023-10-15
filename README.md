@@ -5,6 +5,15 @@
 - [Darja Polevaja](https://github.com/darjapo)
 - [Remedan Areb](https://github.com/Reme-Dire)
   <br>
+
+  # Features
+
+- Real-Time Step Count
+- Setting and Achieving Fitness Goals
+- Understanding Activity Patterns
+- Nutritional Information
+- Maintaining a Balanced Diet
+
   # About the project:
 <img src="https://users.metropolia.fi/~asmitas/readmeImages/Homepage.jpg" width="200" height="400" alt="HomePage"
   title="Home Page"
