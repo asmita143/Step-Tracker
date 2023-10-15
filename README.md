@@ -37,7 +37,7 @@
   title="CaloriesDetail"
   align="left"/>
    <img src="https://users.metropolia.fi/~asmitas/readmeImages/orange.png" width="200" height="400" alt="Settings Page" align = "right"
-  title="Settings Page"/>
+  title="Nutrients value per item"/>
   
 This page shows the progress bar which manipulates according to consumed calories and calories burned by user. This page includes more info button which gives breakdown of total calories into diffrent nutrients in percentage form. The button 'Add new entries button' allows users to add food eaten by user in a specific day. And the button 'Eaten today'shows the list of food entered by the user.
 
@@ -56,7 +56,8 @@ This page shows the progress bar which manipulates according to consumed calorie
 <img src="https://users.metropolia.fi/~asmitas/readmeImages/addmeal.png" width="200" height="400" alt="Detail preview of calories consumed by an user"
   title="CaloriesDetail"
   align="left"/>
-  <img src="https://users.metropolia.fi/~asmitas/readmeImages/manualInput.jpg" width="200" height="400" alt="Settings Page" align = "right"
+  <img src="https://users.metropolia.fi/~asmitas/readmeImages/manualInput.jpg" width="200" height="400" alt="Manual Input Page"
+  align = "right"
   title="Settings Page"/>
   
 This page allows user to add meal and its mass in the system. If user is not able to find the item in list, user can check the nutrients value by scanning bar code of food item. User is able to add food item manually also.
@@ -72,11 +73,26 @@ This page allows user to add meal and its mass in the system. If user is not abl
 
 # User-profile page
 <img src="https://users.metropolia.fi/~asmitas/readmeImages/editProfile.jpg" width="200" height="400" alt="Detail preview of calories consumed by an user"
-  title="CaloriesDetail"
+  title="Edit profile page"
   align="left"/>
   <img src="https://users.metropolia.fi/~asmitas/readmeImages/displayProfile.jpg" width="200" height="400" alt="Settings Page" align = "right"
-  title="Settings Page"/>
+  title="Display profile page"/>
   
 This page is generated for the function to input personal data of the user in editing page and display the data that the user inputs accordingly.
+
+<br /> <br />
+<br /> <br />
+<br /> <br />
+<br /> <br />
+<br /> <br />
+<br /> <br />
+<br /> <br />
+
+# Credits
+- Circular Progress Bar & Timer [Semicolonspace](https://semicolonspace.com/circular-progressbar-android-compose/?fbclid=IwAR3J1-nZMu2iZVIoTWLBAWlNX7UG_A6HtBRDwnLJWG4xFG4eQCpT9RecqWI)
+- Icons [Fontawesome](https://fontawesome.com/)
+- UI theme colors [M3](https://m3.material.io/)
+
+
 
 
