@@ -19,14 +19,18 @@ class StepTrackerViewModel(application: Application) : AndroidViewModel(applicat
         return db.stepDAO.getAllSteps()
     }
 
-    fun getStepsByDate(date: Date): LiveData<Step> {
-        return db.stepDAO.getStepsByDate(date)
-    }
-
     fun addSteps(step: Step) {
         viewModelScope.launch {
             db.stepDAO.addSteps(step)
         }
+    }
+
+    fun getMealEatenTodayByDate(date: String): LiveData<List<Meal>> {
+        return db.mealDao.getEatenTodayByDate(date)
+    }
+
+    fun getMealById(id : Int) : LiveData<List<Meal>>{
+        return db.mealDao.getMealById(id)
     }
 
      fun addMeal(meal : Meal) {

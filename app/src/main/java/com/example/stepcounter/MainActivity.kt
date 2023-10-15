@@ -57,7 +57,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.stepcounter.Homepage.StatisticsGraph
 import com.example.stepcounter.Homepage.StepInfoTop
 import com.example.stepcounter.database.StepTrackerViewModel
-import com.example.stepcounter.database.entities.Step
 import com.example.stepcounter.firstScreen.DisplayDataScreen
 import com.example.stepcounter.firstScreen.InputDataPage
 import com.example.stepcounter.foodScreen.AddNewMeal
@@ -109,10 +108,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.Menu.route) {
                             // Create and display the content for the Profile screen
-                           CaloriesScreen(navController, currentDate)
+                           CaloriesScreen(navController, foodViewModal)
                         }
-                        composable("CaloriesPerProduct") {
-                            CaloriesPerProduct(navController)
+                        composable("CaloriesPerProduct/{item}") {navBackStackEntry ->
+                            navBackStackEntry.arguments?.getString("item")
+                                ?.let { CaloriesPerProduct(navController, it, foodViewModal) }
                         }
                         composable("InputDataPage") {
                             InputDataPage(navController,this@MainActivity)

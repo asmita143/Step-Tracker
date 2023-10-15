@@ -112,9 +112,6 @@ fun ManualInput(navController: NavHostController) {
                 .fillMaxWidth(0.7f),
 
                 onClick = {
-
-
-                    // Navigate to the next screen
                     navController.navigate("InputDataPage")
                 }
             ) {

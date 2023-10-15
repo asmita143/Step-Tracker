@@ -9,7 +9,7 @@ object API {
     const val URL = "https://users.metropolia.fi/~prabind/Extra/"
 
     interface Service {
-        @GET("food_calories.json")
+        @GET("food_items.json")
         suspend fun getList(): List<FoodInfo>
     }
 

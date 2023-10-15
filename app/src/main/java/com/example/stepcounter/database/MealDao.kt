@@ -16,4 +16,10 @@ interface MealDao {
     @Query("select * from food_items")
     fun getMeal() : List<FoodInfo>
 
+    @Query("SELECT * FROM meal_today WHERE date = :date")
+    fun getEatenTodayByDate(date: String): LiveData<List<Meal>>
+
+    @Query("SELECT * FROM meal_today WHERE id =:id ")
+    fun getMealById(id : Int) : LiveData<List<Meal>>
+
 }

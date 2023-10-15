@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,6 +33,7 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,24 +41,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.R
 import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.ui.theme.Typography
-import java.time.LocalDate
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun CaloriesScreen(
     navController: NavHostController,
-    currentDate: LocalDate
+    foodViewModal: StepTrackerViewModel
 ) {
+    var totalCalories = 0
+    //get current date
+    val currentTimeMillis  = System.currentTimeMillis()
+    val instant = Instant.ofEpochMilli(currentTimeMillis)
+    val zoneId = ZoneId.of("UTC")
+    val formattedTime = instant.atZone(zoneId)
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    val currentDate = instant.atZone(zoneId).toLocalDate()
+    val dayOfWeek = currentDate.dayOfWeek
+
     var isOverlayVisible by remember { mutableStateOf(false) }
     var isEatenTodayOverlayVisible by remember { mutableStateOf(false) }
+    val eatenToday = foodViewModal.getMealEatenTodayByDate("$formattedTime-$dayOfWeek").observeAsState(listOf())
+    val tempEatenToday = eatenToday.value
 
+    for (meal in tempEatenToday) {
+        totalCalories += meal.calories
+    }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -68,8 +85,8 @@ fun CaloriesScreen(
     {
         CalorieCalculation(
             currentDate = currentDate.dayOfMonth.toString() + " " + currentDate.month.toString(),
-            consumedCalories = 1185F,
-            burnedCalories = 1058F
+            consumedCalories = totalCalories.toFloat(),
+            burnedCalories = 500F
         )
 
         Row(
@@ -135,7 +152,8 @@ fun CaloriesScreen(
                 ) {
                     EatenTodayOverlay(
                         onCloseClick = { isEatenTodayOverlayVisible = false },
-                        navController
+                        navController,
+                        eatenToday.value
                     )
                 }
             }
@@ -217,7 +235,11 @@ fun MoreInfoOverlay(onCloseClick: () -> Unit,navController:NavHostController) {
 }
 
 @Composable
-fun EatenTodayOverlay(onCloseClick: () -> Unit, navController: NavHostController) {
+fun EatenTodayOverlay(
+    onCloseClick: () -> Unit,
+    navController: NavHostController,
+    eatenToday: List<Meal>
+) {
 
     Column(
         modifier = Modifier
@@ -232,59 +254,21 @@ fun EatenTodayOverlay(onCloseClick: () -> Unit, navController: NavHostController
         )
         //Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 0.dp)) {
-            item {
+            items(eatenToday) {item ->
                 Card(
                     modifier = Modifier
-                        .defaultMinSize(100.dp, 40.dp)
+                        .defaultMinSize(100.dp, 30.dp)
                         .fillMaxWidth()
                         .clickable {
-                            navController.navigate("CaloriesPerProduct")
+                            navController.navigate("CaloriesPerProduct/${item.id}")
                         },
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Row(Modifier.padding(5.dp))
-                    {
-                        Text(
-                            text = "Orange",
-                            style = Typography.labelSmall
-                        )
-                        Spacer(modifier = Modifier.width(60.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.clock), // Replace with your image resource
-                            contentDescription = "time",
-                            modifier = Modifier
-                                .size(15.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                        Text(text = "10:10pm", style = Typography.labelSmall)
-                    }
-                }
-
-                Card(
-                    modifier = Modifier
-                        .defaultMinSize(100.dp, 40.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            navController.navigate("CaloriesPerProduct")
-                        },
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Row(Modifier.padding(5.dp))
-                    {
-                        Text(
-                            text = "Orange",
-                            style = Typography.labelSmall
-                        )
-                        Spacer(modifier = Modifier.width(60.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.clock), // Replace with your image resource
-                            contentDescription = "time",
-                            modifier = Modifier
-                                .size(15.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                        Text(text = "10:10pm", style = Typography.labelSmall)
-                    }
+                    Text(
+                        text = item.name,
+                        style = Typography.labelSmall,
+                        modifier = Modifier.padding(10.dp)
+                    )
                 }
             }
         }

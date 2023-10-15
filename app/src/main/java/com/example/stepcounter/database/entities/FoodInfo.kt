@@ -7,6 +7,11 @@ import androidx.room.PrimaryKey
 data class FoodInfo (
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val name: String?,
-    val calories: Int
+    val name: String,
+    val calories: Int,
+    val carbohydrate : Double,
+    val salt : Double,
+    val protein : Double,
+    val fats : Double,
+    val sugar : Double
 )

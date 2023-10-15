@@ -1,6 +1,6 @@
 package com.example.stepcounter.foodScreen
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,20 +31,34 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.stepcounter.R
 import com.example.stepcounter.database.StepTrackerViewModel
+import com.example.stepcounter.database.entities.FoodInfo
 import com.example.stepcounter.database.entities.Meal
 import com.example.stepcounter.ui.theme.Typography
-import kotlin.reflect.typeOf
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+@SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewModel) {
     var name by remember { mutableStateOf("") }
     var mass by remember { mutableStateOf("") }
     val mealList = foodViewModal.getAllMeals().observeAsState(listOf())
-    val tempMealList =  mealList.value.associate { it.name to it.calories }
-    var matchedItems by remember { mutableStateOf(emptyMap<String?, Int>()) }
+    val tempMealList =  mealList.value
+    var matchedItems by remember { mutableStateOf(listOf<FoodInfo>() ) }
     var isDialogVisible by remember { mutableStateOf(false) }
     var isMatchedItem by remember { mutableStateOf(true) }
+
+    //get current date
+    val currentTimeMillis  = System.currentTimeMillis()
+    val instant = Instant.ofEpochMilli(currentTimeMillis)
+    val zoneId = ZoneId.of("UTC")
+    val formattedTime = instant.atZone(zoneId)
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    val currentDate = instant.atZone(zoneId).toLocalDate()
+    val dayOfWeek = currentDate.dayOfWeek
+
 
     LaunchedEffect(matchedItems) {
         if (matchedItems.isNotEmpty()) {
@@ -166,7 +179,7 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                             .background(Color.LightGray)
                             .height(160.dp)
                     ) {
-                        items(matchedItems.toList()) { (key, value) ->
+                        items(matchedItems) { matchedValue ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -178,13 +191,13 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                                         .fillMaxWidth()
                                         .clickable {
                                             //navController.navigate("CaloriesPerProduct")
-                                            name = key.toString()
+                                            name = matchedValue.name
                                             isDialogVisible = false
                                         },
                                     shape = RoundedCornerShape(5.dp)
                                 ){
                                     Text(
-                                        text = key.toString(),
+                                        text = matchedValue.name,
                                         style = Typography.labelSmall,
                                         modifier = Modifier
                                             .padding(5.dp)
@@ -207,15 +220,21 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
                     SmallFloatingActionButton(
                         onClick = {
                             isMatchedItem = true
-                            if(tempMealList.containsKey(name)){
-                                val index = tempMealList.keys.indexOf(name)
-                                val matchedValue = tempMealList.values.elementAt(index)
+                            if(tempMealList.any { it.name.equals(name, ignoreCase = true )}) {
+                                val index = tempMealList.indexOfFirst { it.name.equals(name, ignoreCase = true) }
+                                var mealName = tempMealList[index].name
+                                val calories =  tempMealList[index].calories
+                                val carbohydrate = tempMealList[index].carbohydrate
+                                val salt =  tempMealList[index].salt
+                                val protein =  tempMealList[index].protein
+                                val fat =  tempMealList[index].fats
+                                val sugar =  tempMealList[index].sugar
 
                                 if(mass.toInt() == 100) {
-                                    foodViewModal.addMeal(Meal(0, name, matchedValue))
+                                    foodViewModal.addMeal(Meal(0, mealName, mass.toInt(), calories, carbohydrate,  salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
                                 }else{
-                                    val calories = (matchedValue * mass.toInt()) / 100
-                                    foodViewModal.addMeal(Meal(0, name, calories))
+                                    val calories1 = (calories * mass.toInt()) / 100
+                                    foodViewModal.addMeal(Meal(0, mealName, mass.toInt(), calories1, carbohydrate, salt, protein, fat, sugar, "$formattedTime-$dayOfWeek"))
                                 }
                                 name = ""
                                 mass = ""
@@ -279,12 +298,13 @@ fun AddNewMeal(navController: NavHostController, foodViewModal: StepTrackerViewM
 }
 
 //This function checks and returns the names of partial match
-fun isPartialMatch(input: String, stringList: Map<String?, Int>): Map<String?, Int> {
-    val partialMatches = mutableMapOf<String?, Int>()
+fun isPartialMatch(input: String, stringList: List<FoodInfo>): List<FoodInfo> {
+    val partialMatches = mutableListOf<FoodInfo>()
 
     for (entry in stringList) {
-        if (entry.key?.contains(input, ignoreCase = true) == true) {
-            partialMatches[entry.key] = entry.value
+        val name = entry.name
+        if (name != null && name.contains(input, ignoreCase = true)) {
+            partialMatches.add(entry)
         }
     }
     return partialMatches
