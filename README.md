@@ -95,6 +95,8 @@ This page is generated for the function to input personal data of the user in ed
 - Circular Progress Bar & Timer [Semicolonspace](https://semicolonspace.com/circular-progressbar-android-compose/?fbclid=IwAR3J1-nZMu2iZVIoTWLBAWlNX7UG_A6HtBRDwnLJWG4xFG4eQCpT9RecqWI)
 - Icons [Fontawesome](https://fontawesome.com/)
 - UI theme colors [M3](https://m3.material.io/)
+- Google Scanner [ML KIT](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner?fbclid=IwAR1gssS_ZPFf12DlAiAVxX8VX00mmed1qBjUTQaKeT33tjeTgWAageI0gSs) and [Link](https://www.youtube.com/watch?v=keiuMUX1k0k)
+- Fetch data from internet [Sarah Brenner](https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DcAJChWxHvuc%26list%3DPLzxawGXQRFsyVnwtFGoLlwdPr039g6WLe%26index%3D2%26fbclid%3DIwAR1hDRbId4A3X_pxHv34KsVw34rHDf8R1lrqfAMr-sZWBpDAXIcjMteLjfk&h=AT3rAfuHBl9BWz6C1Sr6unx2mCOA4Ih-oV9eBy5L_leU24qf-GgLYpaAZLLFIbtuUOP4aKJXxOMlucoUNnOvFVz8oQLiPssvPybQxS_g--MG_Q-O8UQfKYJqNO3dfb09UhaTIA)
 
 
 
